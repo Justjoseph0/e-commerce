@@ -25,8 +25,8 @@ const CartCard = ({ item, handleIncrement, handleDecrement }) => {
     discounted_price,
     id,
     get_total_price,
-    size,
-    slug
+    product_size: size,
+    slug,
   } = item;
 
   const image = `${apiUrl}${product_image}`;
@@ -41,11 +41,14 @@ const CartCard = ({ item, handleIncrement, handleDecrement }) => {
             className="w-48 h-48 sm:w-32 sm:h-32 md:w-40 md:h-40 rounded-lg object-cover border-2 border-custom-brown/20 p-2"
           />
         </div>
-        
+
         {/* Product Details */}
         <div className="flex-1 flex flex-col space-y-3 w-full">
           {/* Product Name and Price */}
-          <Link to={`/product/detail/${slug}`} className="flex flex-col sm:flex-row justify-between items-start gap-2">
+          <Link
+            to={`/product/detail/${slug}`}
+            className="flex flex-col sm:flex-row justify-between items-start gap-2"
+          >
             <h3 className="text-lg sm:text-xl font-semibold text-gray-800 hover:text-custom-brown transition w-full group-hover:text-yellow-400">
               {product_name}
             </h3>
@@ -53,15 +56,17 @@ const CartCard = ({ item, handleIncrement, handleDecrement }) => {
               ₦{discounted_price}
             </p>
           </Link>
-          
+
           {/* Size and Total Price */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between text-sm text-gray-600 space-y-2 sm:space-y-0">
-            <p className="bg-gray-100 px-2 py-1 rounded-md">
-              Size: {size}
-            </p>
+            {size ? (
+              <p className="bg-gray-100 px-2 py-1 rounded-md">Size: {size}</p>
+            ) : (
+              <div /> 
+            )}
             <p className="font-medium">Total: ₦{get_total_price}</p>
           </div>
-          
+
           {/* Actions */}
           <div className="flex flex-col sm:flex-row justify-between items-center mt-4 space-y-3 sm:space-y-0">
             {/* Remove Button */}
@@ -78,12 +83,13 @@ const CartCard = ({ item, handleIncrement, handleDecrement }) => {
                     Remove from cart
                   </AlertDialogTitle>
                   <AlertDialogDescription className="text-gray-600">
-                    Are you sure you want to remove {product_name} from your cart?
+                    Are you sure you want to remove {product_name} from your
+                    cart?
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel className="mr-2">Cancel</AlertDialogCancel>
-                  <AlertDialogAction 
+                  <AlertDialogAction
                     onClick={() => deleteItem(id)}
                     className="bg-red-500 hover:bg-red-600 text-white"
                   >
@@ -92,11 +98,11 @@ const CartCard = ({ item, handleIncrement, handleDecrement }) => {
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
-            
+
             {/* Quantity Controls */}
             <div className="flex items-center space-x-3 bg-gray-100 rounded-full p-1">
               <button
-                onClick={() => handleDecrement(product_id, quantity)}
+                onClick={() => handleDecrement(product_id, quantity,size)}
                 disabled={quantity === 1}
                 className={`h-8 w-8 rounded-full flex justify-center items-center transition ${
                   quantity === 1
@@ -108,7 +114,7 @@ const CartCard = ({ item, handleIncrement, handleDecrement }) => {
               </button>
               <span className="px-2 font-medium text-gray-800">{quantity}</span>
               <button
-                onClick={() => handleIncrement(product_id, quantity)}
+                onClick={() => handleIncrement(product_id, quantity,size)}
                 className="h-8 w-8 rounded-full bg-custom-brown text-white flex justify-center items-center hover:bg-custom-brown/90 transition"
               >
                 <Plus className="w-4 h-4" />
@@ -131,7 +137,7 @@ CartCard.propTypes = {
     discounted_price: PropTypes.string.isRequired,
     id: PropTypes.number.isRequired,
     get_total_price: PropTypes.number.isRequired,
-    size: PropTypes.string.isRequired,
+    product_size: PropTypes.string,
     slug: PropTypes.string.isRequired,
   }).isRequired,
   handleIncrement: PropTypes.func.isRequired,

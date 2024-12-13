@@ -75,7 +75,7 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  const updateCart = async (productId, quantity) => {
+  const updateCart = async (productId, quantity,size) => {
 
     console.log('Updating cart:', {
       productId, 
@@ -86,7 +86,7 @@ export const CartProvider = ({ children }) => {
   
     if (isAuthenticated) {
       try {
-        await api.patch("api/cart/add/", { product_id: productId, quantity });
+        await api.patch("api/cart/add/", { product_id: productId, quantity,size });
         toast.success("Cart updated!");
         fetchCart();
       } catch (error) {

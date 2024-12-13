@@ -11,12 +11,12 @@ const Cart = () => {
   console.log(cart);
   
 
-  const handleIncrement = (productId, currentQuantity) => {
-    updateCart(productId, currentQuantity + 1);
+  const handleIncrement = (productId, currentQuantity,size) => {
+    updateCart(productId, currentQuantity + 1,size);
   };
 
-  const handleDecrement = (productId, currentQuantity) => {
-    updateCart(productId, currentQuantity - 1);
+  const handleDecrement = (productId, currentQuantity,size) => {
+    updateCart(productId, currentQuantity - 1,size);
   };
 
   if (isLoading) return <Loading />;

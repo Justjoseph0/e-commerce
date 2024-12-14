@@ -9,15 +9,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-
 import { Minus, Plus, Star } from "lucide-react";
 import toast from "react-hot-toast";
 import { useProducts } from "@/hooks/useProducts";
@@ -36,7 +27,7 @@ const ProductDetails = () => {
   const [quantity, setQuantity] = useState(0);
   useEffect(() => {
     fetchProductDetail(slug);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slug]);
 
   console.log(currentProduct);
@@ -49,10 +40,10 @@ const ProductDetails = () => {
     price,
     discounted_price,
     description,
+    product_type,
   } = currentProduct;
 
   console.log(currentProduct);
-  
 
   const cartItem = cart.find((item) => item.product_id === id);
   const img = `${apiUrl}${image}`;
@@ -65,12 +56,14 @@ const ProductDetails = () => {
   }, [cartItem]);
 
   const handleAddToCart = () => {
-    if (!selectedSize) {
-      toast.error("Please select a size!");
-      return;
+    if (product_type === "sized") {
+      if (!selectedSize) {
+        toast.error("Please select a size!");
+        return;
+      }
     }
 
-    addToCart(id, 1, selectedSize,currentProduct);
+    addToCart(id, 1, selectedSize, currentProduct);
     setQuantity(1);
   };
 
@@ -138,41 +131,40 @@ const ProductDetails = () => {
             </div>
           </div>
 
-          <div className="mb-4">
-            <label className="block text-gray-700 mb-2">Select Size</label>
-            <Select onValueChange={handleSizeChange}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Choose Size" />
-              </SelectTrigger>
-              <SelectContent>
-                {["S", "M", "L", "XL", "XXL", "XXXL"].map((size) => (
-                  <SelectItem key={size} value={size.toUpperCase()}>
-                    {size}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          {product_type == "sized" && (
+            <div className="mb-4">
+              <label className="block text-gray-700 mb-2">Select Size</label>
+              <Select onValueChange={handleSizeChange}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Choose Size" />
+                </SelectTrigger>
+                <SelectContent>
+                  {["S", "M", "L", "XL", "XXL", "XXXL"].map((size) => (
+                    <SelectItem key={size} value={size.toUpperCase()}>
+                      {size}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
 
           <div className="mb-4">
             <p className="text-sm text-gray-600">
               + shipping from ₦250 to ISOLO
             </p>
           </div>
-
-         
-            <Button
-              className={`w-full py-3 rounded-lg text-white font-semibold transition-colors duration-300 ${
-                inStock
-                  ? "bg-amber-600 hover:bg-amber-700"
-                  : "bg-gray-400 cursor-not-allowed"
-              }`}
-              disabled={!inStock}
-              onClick={handleAddToCart}
-            >
-              Add to Cart
-            </Button>
-
+          <Button
+            className={`w-full py-3 rounded-lg text-white font-semibold transition-colors duration-300 ${
+              inStock
+                ? "bg-amber-600 hover:bg-amber-700"
+                : "bg-gray-400 cursor-not-allowed"
+            }`}
+            disabled={!inStock}
+            onClick={handleAddToCart}
+          >
+            Add to Cart
+          </Button>
         </div>
       </div>
 

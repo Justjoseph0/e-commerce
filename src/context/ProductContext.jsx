@@ -100,10 +100,19 @@ export const ProductProvider = ({ children }) => {
   };
 
   const updateProduct = async (productSlug,data) => {
+
+    if (data instanceof FormData) {
+      console.log("FormData being sent to the backend:");
+      for (let [key, value] of data.entries()) {
+        console.log(`${key}:`, value);
+      }
+    } else {
+      console.log("Data being sent to the backend:", data);
+    }
     try {
       await api.patch(`api/product/detail/${productSlug}/`,data);
       fetchProducts()
-      // toast.success("Product Created successfully!");
+      toast.success("Product Created successfully!");
       // console.log("sssss");
     } catch (error) {
       console.error(error);

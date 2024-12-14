@@ -81,7 +81,8 @@ export const CartProvider = ({ children }) => {
       productId, 
       quantity, 
       isAuthenticated,
-      currentCart: cart
+      currentCart: cart,
+      size
     });
   
     if (isAuthenticated) {

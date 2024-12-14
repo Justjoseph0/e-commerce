@@ -40,7 +40,6 @@ const AddProduct = ({
     price,
     discounted_price,
     quantity,
-    size,
     is_available,
     category,
   } = currentProduct;

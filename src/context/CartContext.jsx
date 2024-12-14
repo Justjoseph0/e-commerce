@@ -144,6 +144,19 @@ export const CartProvider = ({ children }) => {
   };
   
 
+  const checkout = async (email,totalAmount) => {
+    try {
+      const response = await api.post("api/payment/", {email: email, amount: totalAmount})
+
+      const { authorization_url } = response.data.data;
+
+     
+      window.location.href = authorization_url;
+    } catch (error) {
+      console.error('Payment Initialization Error:', error);
+    }
+  }
+
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -156,7 +169,7 @@ export const CartProvider = ({ children }) => {
   }, [isAuthenticated]);
 
   return (
-    <CartContext.Provider value={{ cart, addToCart, updateCart, deleteItem }}>
+    <CartContext.Provider value={{ cart, addToCart, updateCart, deleteItem,checkout }}>
       {children}
     </CartContext.Provider>
   );

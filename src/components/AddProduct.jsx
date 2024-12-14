@@ -47,14 +47,6 @@ const AddProduct = ({
 
 
 
-
-  const SIZE_CHOICES = [
-    { value: "S", label: "Small" },
-    { value: "M", label: "Medium" },
-    { value: "L", label: "Large" },
-    { value: "XL", label: "Extra Large" },
-  ];
-
   const { fetchCategories } = useProducts();
 
   useEffect(function () {
@@ -209,30 +201,6 @@ const AddProduct = ({
               />
             </div>
 
-            <div>
-              <Label htmlFor="size" className="font-medium text-gray-700">
-                Size
-              </Label>
-              <Select
-                value={size}
-                onValueChange={(value) =>
-                  setCurrentProduct({ ...currentProduct, size: value })
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select Size" />
-                </SelectTrigger>
-                <SelectContent>
-                  {SIZE_CHOICES.map((size) => {
-                    return (
-                      <SelectItem key={size.value} value={size.value}>
-                        {size.label}
-                      </SelectItem>
-                    );
-                  })}
-                </SelectContent>
-              </Select>
-            </div>
 
             <div>
               <Label htmlFor="available" className="font-medium text-gray-700">

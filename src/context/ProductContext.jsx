@@ -28,7 +28,7 @@ export const ProductProvider = ({ children }) => {
   
       });
       const res = response.data
-      console.log(res);
+      // console.log(res);
       
       setProducts({
         data: res.results,
@@ -104,7 +104,7 @@ export const ProductProvider = ({ children }) => {
       await api.patch(`api/product/detail/${productSlug}/`,data);
       fetchProducts()
       // toast.success("Product Created successfully!");
-      console.log("sssss");
+      // console.log("sssss");
     } catch (error) {
       console.error(error);
       if(error.response?.data){

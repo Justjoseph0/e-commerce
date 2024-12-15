@@ -157,6 +157,15 @@ export const CartProvider = ({ children }) => {
     }
   }
 
+  const verifyPayment =  async(reference) => {
+    try {
+      await api.get(`/api/verify-payment/${reference}`)
+    } catch (error) {
+      console.error(error);
+      
+    }
+  }
+
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -169,7 +178,7 @@ export const CartProvider = ({ children }) => {
   }, [isAuthenticated]);
 
   return (
-    <CartContext.Provider value={{ cart, addToCart, updateCart, deleteItem,checkout }}>
+    <CartContext.Provider value={{ cart, addToCart, updateCart, deleteItem,checkout,verifyPayment }}>
       {children}
     </CartContext.Provider>
   );

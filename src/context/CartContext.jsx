@@ -159,7 +159,8 @@ export const CartProvider = ({ children }) => {
 
   const verifyPayment =  async(reference) => {
     try {
-      await api.get(`/api/verify-payment/${reference}`)
+      const response = await api.get(`/api/order/status/${reference}`);
+      return response
     } catch (error) {
       console.error(error);
       

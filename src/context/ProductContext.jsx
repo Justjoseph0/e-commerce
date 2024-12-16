@@ -60,7 +60,7 @@ export const ProductProvider = ({ children }) => {
   const fetchProductDetail = async (productSlug = null) => {
     setIsLoading(true);
     try {
-      const res = await api.get(`api/product/detail/${productSlug}`);
+      const res = await api.get(`api/product/detail/${productSlug}/`);
       setCurrentProduct(res.data);
     } catch (error) {
       console.error("error fetching products", error);

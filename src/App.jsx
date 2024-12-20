@@ -3,6 +3,8 @@ import { ProductProvider } from "./context/ProductContext";
 import { CartProvider } from "./context/CartContext";
 import AppRoute from "./routes/Route";
 import { BrowserRouter } from "react-router-dom";
+import { Suspense } from "react";
+import Loading from "./components/Loading";
 
 function App() {
   return (
@@ -10,7 +12,9 @@ function App() {
       <AuthProvider>
         <ProductProvider>
           <CartProvider>
-            <AppRoute />
+            <Suspense fallback={<Loading />}>
+              <AppRoute />
+            </Suspense>
           </CartProvider>
         </ProductProvider>
       </AuthProvider>

@@ -1,9 +1,10 @@
 import { createContext, useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import api from "@/api";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "@/constants/constants";
 import { jwtDecode } from "jwt-decode";
+import toast from "react-hot-toast";
 
 export const AuthContext = createContext();
 
@@ -12,7 +13,9 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const location = useLocation();
 
+  const from = location.state?.from?.pathname || "/";
   // console.log(user);
   const clearError = () => setError(null);
 
@@ -54,11 +57,11 @@ export const AuthProvider = ({ children }) => {
       const user = jwtDecode(data.access);
 
       setUser(user);
-      navigate("/");
+      navigate(from);
       // setUser(response.data);
     } catch (error) {
       console.error(error);
-      
+
       if (error.response) {
         console.error("Login failed:", error.response.data);
         setError(
@@ -80,7 +83,7 @@ export const AuthProvider = ({ children }) => {
         return;
       }
       const user = jwtDecode(token);
-      if(user) setUser(user)
+      if (user) setUser(user);
     } catch (error) {
       console.error("Error during authentication:", error);
       setUser(null);
@@ -93,6 +96,76 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem(ACCESS_TOKEN);
     localStorage.removeItem(REFRESH_TOKEN);
     setUser(null);
+  };
+
+
+
+  const userProfile = async () => {
+    try {
+      const res = await api.get("api/profile");
+      return res.data;
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to load user profile.");
+    }
+  }
+  
+
+  const addAddress = async (data) => {
+    try {
+      await api.post("api/address/", data);
+      toast.success("Address added successfully!");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to add address. Please try again.");
+    }
+  };
+
+  const getAllUsers = async (searchTerm = "", statusFilter = "") => {
+    console.log(searchTerm);
+
+    try {
+      const res = await api.get("api/admin/users", {
+        params: {
+          search: searchTerm,
+          status: statusFilter === "all" ? "" : statusFilter,
+        },
+      });
+      return res.data;
+    } catch (error) {
+      console.error(error);
+      return [];
+    }
+  };
+
+  const getUserAddress = async (addressId = null) => {
+    try {
+      const res = await api.get(addressId ? `api/address/${addressId}/` : "api/address/");
+      return res.data;
+    } catch (error) {
+      console.error(error);
+      return [];
+    }
+  };
+
+  const updateAddress = async (addressId, data) => { 
+    try {
+      await api.patch(`api/address/${addressId}/`, data);
+      toast.success("Address updated successfully!");
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  }    
+
+  const deleteAddress = async (id) => {
+    try {
+      await api.delete(`api/address/${id}/`);
+      toast.success("Address Deleted successfully!");
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
   };
 
   useEffect(() => {
@@ -109,7 +182,13 @@ export const AuthProvider = ({ children }) => {
         error,
         clearError,
         user,
-        loading
+        loading,
+        getAllUsers,
+        getUserAddress,
+        deleteAddress,
+        userProfile,
+        addAddress,
+        updateAddress
       }}
     >
       {children}

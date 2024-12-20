@@ -4,6 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 
 function AdminRoute() {
     const { user, isAuthenticated, loading } = useAuth();
+   
 
     if (loading) {
         return <Loading />;
@@ -14,7 +15,7 @@ function AdminRoute() {
         <Outlet />
     ) : (
 
-        <Navigate to="/unauthorized" replace />
+        <Navigate to="/unauthorized"   />
     );
 }
 

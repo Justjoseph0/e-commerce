@@ -1,11 +1,16 @@
 import { Route } from "react-router-dom";
-import HomePage from "../pages/HomePage";
+import { lazy } from "react";
+
+const HomePage = lazy(() => import ( "../pages/HomePage"))
+const ProductDetails = lazy(() => import ( "../pages/ProductDetails"))
+const Cart = lazy(() => import ( "../pages/Cart"))
+
 import WomenPage from "../pages/WomenPage";
 import MenPage from "../pages/MenPage";
 import NewArrival from "../pages/NewArrival";
 import CollectionsPage from "../pages/CollectionsPage";
-import Cart from "../pages/Cart";
-import ProductDetails from "../pages/ProductDetails";
+// import Cart from "../pages/Cart"
+
 
 const PublicRoute = () => (
   <>

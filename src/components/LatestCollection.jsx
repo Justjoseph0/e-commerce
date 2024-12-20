@@ -29,7 +29,8 @@ const LatestCollection = () => {
       </div>
 
       <div className="grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-6">
-        {products.map((cloth) => (
+        
+        {products.length >  0 && products.map((cloth) => (
           <ClothCard key={cloth.id} cloth={cloth} />
         ))}
       </div>

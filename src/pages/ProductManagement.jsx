@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
@@ -11,6 +11,10 @@ import toast from "react-hot-toast";
 
 const ProductManagement = () => {
   const { products, productMeta, fetchProducts, addProduct, updateProduct, deleteProduct } = useProducts();
+
+  useEffect(()=> {
+    fetchProducts()
+  },[])
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);

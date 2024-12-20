@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState } from "react";
 import api from "@/api";
 import toast from "react-hot-toast";
 import PropTypes from 'prop-types';
@@ -142,12 +142,6 @@ export const ProductProvider = ({ children }) => {
   };
 
 
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-
-
-  // console.log(products);
   
 
   return (

@@ -3,7 +3,6 @@ import api from "@/api";
 import { createContext, useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 
-
 // eslint-disable-next-line react-refresh/only-export-components
 export const CartContext = createContext();
 
@@ -11,6 +10,7 @@ export const CartContext = createContext();
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
   const { isAuthenticated } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
 
   const localCartKey = "cart";
 
@@ -26,11 +26,14 @@ export const CartProvider = ({ children }) => {
 
   const fetchCart = async () => {
     if (!isAuthenticated) return;
+    setIsLoading(true);
     try {
       const response = await api.get("api/cart/");
       setCart(response.data.items || []);
     } catch (error) {
       console.error("Error fetching cart:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -75,26 +78,29 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  const updateCart = async (productId, quantity,size) => {
-
-    console.log('Updating cart:', {
-      productId, 
-      quantity, 
+  const updateCart = async (productId, quantity, size) => {
+    console.log("Updating cart:", {
+      productId,
+      quantity,
       isAuthenticated,
       currentCart: cart,
-      size
+      size,
     });
-  
+
     if (isAuthenticated) {
       try {
-        await api.patch("api/cart/add/", { product_id: productId, quantity,size });
+        await api.patch("api/cart/add/", {
+          product_id: productId,
+          quantity,
+          size,
+        });
         toast.success("Cart updated!");
         fetchCart();
       } catch (error) {
         console.error("Error updating item in cart:", error);
-        if(error.response?.data?.detail){
-          const errorData = error.response.data.detail
-          toast.error(errorData)
+        if (error.response?.data?.detail) {
+          const errorData = error.response.data.detail;
+          toast.error(errorData);
         }
       }
     } else {
@@ -108,7 +114,7 @@ export const CartProvider = ({ children }) => {
 
   const deleteItem = async (productId) => {
     console.log(productId);
-    
+
     if (isAuthenticated) {
       try {
         await api.delete(`api/cart/item/${productId}/remove/`);
@@ -119,67 +125,121 @@ export const CartProvider = ({ children }) => {
       }
     } else {
       const updatedCart = cart.filter((item) => item.id !== productId);
-      saveLocalCart(updatedCart); 
+      saveLocalCart(updatedCart);
       toast.success("Item removed successfully!");
     }
   };
 
   const syncCart = async () => {
-  
     const localCart = JSON.parse(localStorage.getItem(localCartKey) || "[]");
-  
+
     if (localCart.length === 0) {
       console.error("No items in the local cart to sync.");
       return;
     }
-  
+
     try {
       await api.post("api/cart/sync/", { cart: localCart });
       console.log("Cart synced successfully!");
-      localStorage.removeItem(localCartKey)
+      localStorage.removeItem(localCartKey);
       fetchCart();
     } catch (error) {
       console.error("Error syncing cart:", error);
     }
   };
-  
 
-  const checkout = async (email,totalAmount) => {
+  const checkout = async (email, totalAmount) => {
     try {
-      const response = await api.post("api/payment/", {email: email, amount: totalAmount})
+      const response = await api.post("api/payment/", {
+        email: email,
+        amount: totalAmount,
+      });
 
       const { authorization_url } = response.data.data;
 
-     
       window.location.href = authorization_url;
     } catch (error) {
-      console.error('Payment Initialization Error:', error);
+      console.error("Payment Initialization Error:", error);
     }
-  }
+  };
 
-  const verifyPayment =  async(reference) => {
+  const verifyPayment = async (reference) => {
     try {
-      const response = await api.get(`/api/order/status/${reference}`);
-      return response
+      const response = await api.get(`/api/orders/status/${reference}`);
+      return response;
     } catch (error) {
       console.error(error);
-      
     }
-  }
+  };
 
+  const userOrders = async ( page = 2 ) => {
+    setIsLoading(true);
+    try {
+      const response = await api.get("/api/user/orders/", { params: { page } });
+      return response.data;
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const adminOrders = async ({
+    page = 1,
+    statusFilter = "",
+    searchTerm = "",
+  }) => {
+    setIsLoading(true);
+    try {
+      const response = await api.get("/api/admin/orders/", {
+        params: {
+          page,
+          status: statusFilter === "all" ? "" : statusFilter,
+          search: searchTerm,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const adminOrderDetail = async (reference) => {
+    try {
+      const response = await api.get(`api/admin/order/${reference}`);
+      return response.data;
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   useEffect(() => {
     if (isAuthenticated) {
       fetchCart();
-      syncCart();
+      // syncCart();
     } else {
       loadLocalCart();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated]);
 
   return (
-    <CartContext.Provider value={{ cart, addToCart, updateCart, deleteItem,checkout,verifyPayment }}>
+    <CartContext.Provider
+      value={{
+        cart,
+        addToCart,
+        updateCart,
+        deleteItem,
+        checkout,
+        verifyPayment,
+        userOrders,
+        isLoading,
+        adminOrders,
+        adminOrderDetail,
+      }}
+    >
       {children}
     </CartContext.Provider>
   );

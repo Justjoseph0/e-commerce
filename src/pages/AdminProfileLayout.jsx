@@ -29,28 +29,27 @@ const AdminProfileLayout = () => {
   const toggleMobileSidebar = () => {
     setIsMobileSidebarOpen(!isMobileSidebarOpen);
   };
+
+  // New function to close sidebar
+  const closeMobileSidebar = () => {
+    setIsMobileSidebarOpen(false);
+  };
+
   function handleLogout() {
     logout();
     navigate("/login");
+    closeMobileSidebar(); 
   }
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      {/* Mobile Sidebar Toggle */}
-      {/* <button
-        onClick={toggleMobileSidebar}
-        className="fixed top-4 left-4 z-50 md:hidden bg-white shadow-md p-2 rounded-full"
-      >
-        {isMobileSidebarOpen ? <X size={24} /> : <Menu size={24} />}
-      </button> */}
-
       {/* Sidebar */}
       <div
         className={`
         fixed inset-y-0 left-0 w-64 bg-white shadow-lg z-40 
         transform transition-transform duration-300 h-fit
         ${isMobileSidebarOpen ? "translate-x-0" : "-translate-x-full"}
-        md:relative md:translate-x-0
+        lg:relative lg:translate-x-0
       `}
       >
         <div className="p-5 border-b ">
@@ -63,31 +62,37 @@ const AdminProfileLayout = () => {
               to="/admin"
               icon={<LayoutGrid className="mr-3" />}
               label="Dashboard"
+              onClick={closeMobileSidebar}
             />
             <SidebarLink
               to="/admin/orders"
               icon={<ShoppingCart className="mr-3" />}
               label="Orders"
+              onClick={closeMobileSidebar}
             />
             <SidebarLink
               to="/admin/products"
               icon={<Package className="mr-3" />}
               label="Products"
+              onClick={closeMobileSidebar}
             />
             <SidebarLink
               to="/admin/customers"
               icon={<Users className="mr-3" />}
               label="Customers"
+              onClick={closeMobileSidebar}
             />
             <SidebarLink
               to="/admin/analytics"
               icon={<BarChart3 className="mr-3" />}
               label="Analytics"
+              onClick={closeMobileSidebar}
             />
             <SidebarLink
               to="/admin/settings"
               icon={<Settings className="mr-3" />}
               label="Settings"
+              onClick={closeMobileSidebar}
             />
           </ul>
 
@@ -108,6 +113,16 @@ const AdminProfileLayout = () => {
         {/* Top Navigation */}
         <header className="bg-white shadow-sm">
           <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            {/* Mobile Sidebar Toggle for Small Devices */}
+            <div className="lg:hidden mr-4">
+              <button 
+                onClick={toggleMobileSidebar}
+                className="text-gray-600 hover:text-gray-800"
+              >
+                {isMobileSidebarOpen ? <X size={24} /> : <Menu size={24} />}
+              </button>
+            </div>
+
             {/* Search Bar */}
             <div className="flex-1 md:max-w-xs relative">
               <input
@@ -147,7 +162,7 @@ const AdminProfileLayout = () => {
         </header>
 
         {/* Main Content */}
-        <main className="flex-1 overflow-y-auto lg:p-6 bg-gray-50">
+        <main className="flex-1 overflow-y-auto lg:p-6 bg-gray-50 px-4">
           <div className="max-w-full mx-auto">
             <Outlet />
           </div>

@@ -31,12 +31,12 @@ const CheckoutPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    if(!formData.email){
-        alert('ejejejej')
-        return
-    }
+    // if(!formData.email){
+    //     alert('ejejejej')
+    //     return
+    // }
 
-    await checkout(formData.email,total)
+    await checkout()
   }
   
 

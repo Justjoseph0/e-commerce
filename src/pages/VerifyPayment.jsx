@@ -8,10 +8,14 @@ const VerifyPayment = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [paymentDetails, setPaymentDetails] = useState(null);
 
+
+  console.log(paymentDetails);
+  
+
   useEffect(() => {
     const handleVerifyPayment = async () => {
       try {
-        // Extract reference from URL (assuming you're using react-router)
+        // Extract reference from URL
         const urlParams = new URLSearchParams(window.location.search);
         const reference = urlParams.get("reference");
 
@@ -19,15 +23,15 @@ const VerifyPayment = () => {
           throw new Error("No payment reference found");
         }
 
-        // Make API call to verify payment
-        const response = await verifyPayment(reference)
-
+  
+        const response = await verifyPayment(reference);
+      
         console.log(response);
         
 
         if (response.data.status === "success") {
           setVerificationStatus("success");
-          setPaymentDetails(response.data.payment);
+          setPaymentDetails(response.data);
         } else {
           setVerificationStatus("failed");
           setErrorMessage(
@@ -76,17 +80,17 @@ const VerifyPayment = () => {
                 </span>
                 <span className="text-gray-600">Transaction ID:</span>
                 <span className="font-semibold text-green-800">
-                  {paymentDetails?.transactionId || "N/A"}
+                  {paymentDetails?.transaction_id || "N/A"}
                 </span>
                 <span className="text-gray-600">Date:</span>
                 <span className="font-semibold text-green-800">
-                  {new Date().toLocaleString()}
+                  {paymentDetails?.created_at}
                 </span>
               </div>
             </div>
             <button
               className="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition-colors"
-              onClick={() => (window.location.href = "/dashboard")}
+              onClick={() => (window.location.href = "/profile")}
             >
               Continue to Dashboard
             </button>
@@ -126,7 +130,7 @@ const VerifyPayment = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+    <div className=" bg-gray-100 flex items-center justify-center p-4">
       <div className="bg-white shadow-xl rounded-xl p-8 w-full max-w-md">
         <div className="mb-6 text-center">
           <h1 className="text-3xl font-bold text-gray-800">

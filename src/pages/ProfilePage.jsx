@@ -1,19 +1,36 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { User, Edit } from "lucide-react";
 import { Link } from "react-router-dom";
-
+import { useAuth } from "@/hooks/useAuth";
 
 const ProfilePage = () => {
- 
-  const [personalInfo, setPersonalInfo] = useState({
-    firstName: "joseph",
-    lastName: "onuoha",
-    email: "emma.johnson@example.com",
-    phone: "+1 (555) 123-4567",
-  });
+  const { getUserAddress } = useAuth();
+  const [addresses, setAddresses] = useState([]);
 
- 
+
+
+  const {
+    email,
+    city,
+    state,
+    last_name: lastName,
+    first_name: firstName,
+    street_address:street,
+    phone_number: phone,
+  } = addresses;
+    
+
+
+  async function userAddress() {
+    const data = await getUserAddress();
+
+    const defaultAddress = data.find((address) => address.is_default === true);
+    setAddresses(defaultAddress);
+  }
+  useEffect(() => {
+    userAddress();
+  }, []);
 
   return (
     <div className="">
@@ -36,16 +53,16 @@ const ProfilePage = () => {
               <div>
                 <p className="text-sm text-gray-600">First Name</p>
                 <p className="font-medium capitalize">
-                  {personalInfo.firstName}
+                  {firstName}
                 </p>
               </div>
               <div>
                 <p className="text-sm text-gray-600">Last Name</p>
-                <p className="font-medium ">{personalInfo.lastName}</p>
+                <p className="font-medium ">{lastName}</p>
               </div>
               <div>
                 <p className="text-sm text-gray-600">Email Address</p>
-                <p className="font-medium capitalize">{personalInfo.email}</p>
+                <p className="font-medium">{email}</p>
               </div>
             </div>
           </CardContent>
@@ -67,13 +84,13 @@ const ProfilePage = () => {
               <p className="font-medium">Your default shipping address:</p>
               <div>
                 <p className="text-sm capitalize">
-                  {personalInfo.firstName} {personalInfo.lastName}
+                  {firstName} {lastName}
                 </p>
                 <p className="text-sm capitalize">
-                  Comm ave feru Ijaba feru Ijaba ota
+                  {street}
                 </p>
-                <p className="text-sm capitalize">OTTA TOWN (BELLS), Ogun</p>
-                <p className="text-sm capitalize">{personalInfo.phone}</p>
+                <p className="text-sm capitalize">{city}, {state}</p>
+                <p className="text-sm capitalize">+234 {phone}</p>
               </div>
             </div>
           </CardContent>

@@ -4,7 +4,7 @@ import Sidebar from "../components/Sidebar";
 
 const UserProfileLayout = () => {
   return (
-    <div className="flex gap-6 bg-gray-100 max-w-7xl mx-auto">
+    <div className="flex gap-6 bg-gray-100 max-w-7xl mx-auto lg:py-8">
       <div className="sm:w-[30%] w-full h-fit bg-white pb-3">
         <Sidebar />
       </div>

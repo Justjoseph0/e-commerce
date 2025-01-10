@@ -16,9 +16,8 @@ const MenPage = () => {
   };
 
   return (
-    <section className="max-w-7xl mx-auto flex flex-col gap-y-10">
+    <section className="flex flex-col gap-y-10">
       <HeroSection
-        backgroundImage="men.jpg"
         title="Men Wears"
         subtitle="Discover Men Wears at Batitude Originals."
       />
@@ -27,7 +26,6 @@ const MenPage = () => {
         isLoading={isLoading}
         category="men"
         message="Men Page."
-        fetchProductsHandler={fetchProductsHandler}
       />
     </section>
   );

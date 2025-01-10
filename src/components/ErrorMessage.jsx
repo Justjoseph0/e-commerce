@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import { AlertCircle } from "lucide-react";
 import Button from "./Button";
 
-const ErrorMessage = ({ message, errorMessageText, onRetry }) => {
+const ErrorMessage = ({ message, errorMessageText }) => {
   return (
     <section className="lg:px-10 px-4 md:py-28 py-16">
       <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start space-x-3">
@@ -14,8 +14,8 @@ const ErrorMessage = ({ message, errorMessageText, onRetry }) => {
               "Please try again later or contact support if the problem persists."}
           </p>
           <Button
-            onClick={onRetry}
-             className="mt-3 text-sm font-medium text-red-600 hover:text-red-800 transition-colors border border-red-600 rounded-lg py-2 px-4"
+            onClick={() => window.location.reload()}
+            className="mt-3 text-sm font-medium text-red-600 hover:text-red-800 transition-colors border border-red-600 rounded-lg py-2 px-4"
           >
             Try Again
           </Button>
@@ -28,7 +28,6 @@ const ErrorMessage = ({ message, errorMessageText, onRetry }) => {
 ErrorMessage.propTypes = {
   message: PropTypes.string.isRequired,
   errorMessageText: PropTypes.string,
-  onRetry: PropTypes.func.isRequired,
 };
 
 export default ErrorMessage;

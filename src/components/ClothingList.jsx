@@ -9,15 +9,24 @@ import toast from "react-hot-toast";
 import Button from "./Button";
 import ErrorMessage from "./ErrorMessage";
 
-export const ClothingList = ({ products, isLoading, category,fetchProductsHandler,message }) => {
+export const ClothingList = ({
+  products,
+  isLoading,
+  category,
+  message,
+}) => {
   const [sortOption, setSortOption] = useState("");
   const { productMeta, fetchProducts, error } = useProducts();
+  const [selectedSize, setSelectedSize] = useState("");
+
+  // console.log(selectedSize);
 
   const handleSortChange = (selectedValue) => {
     setSortOption(selectedValue);
 
     const sortParams = {
       category: category,
+      ...(selectedSize && { size: selectedSize }),
     };
 
     switch (selectedValue) {
@@ -43,12 +52,27 @@ export const ClothingList = ({ products, isLoading, category,fetchProductsHandle
   const handlePageChange = (pageNumber) => {
     const pageParams = {
       category: category,
+      ...(selectedSize && { size: selectedSize }),
       ...(sortOption === "lowPrice" && { sort: "discounted_price" }),
       ...(sortOption === "HighPrice" && { sort: "-discounted_price" }),
       ...(sortOption === "available" && { is_available: true }),
     };
 
     fetchProducts(pageNumber, pageParams);
+  };
+
+  const handleSizeChange = (value) => {
+    setSelectedSize(value);
+
+    const sizeParams = {
+      category: category,
+      ...(value && { size: value }),
+      ...(sortOption === "lowPrice" && { sort: "discounted_price" }),
+      ...(sortOption === "HighPrice" && { sort: "-discounted_price" }),
+      ...(sortOption === "available" && { is_available: true }),
+    };
+
+    fetchProducts(1, sizeParams);
   };
 
   if (isLoading) {
@@ -60,7 +84,6 @@ export const ClothingList = ({ products, isLoading, category,fetchProductsHandle
       <ErrorMessage
         message={message}
         errorMessageText={error}
-        onRetry={fetchProductsHandler}
       />
     );
   }
@@ -68,13 +91,16 @@ export const ClothingList = ({ products, isLoading, category,fetchProductsHandle
   const totalPages = Math.ceil(productMeta.count / 15);
 
   return (
-    <section className="lg:px-10 px-4">
+    <section className="max-w-7xl mx-auto lg:px-10 px-4">
       <div className="mb-10 flex gap-4 justify-end">
         <SortSelect
           handleSortChange={handleSortChange}
           currentSort={sortOption}
         />
-        <SizeSelect />
+        <SizeSelect
+          onSizeChange={handleSizeChange}
+          selectedSize={selectedSize}
+        />
       </div>
 
       {products.length > 0 ? (
@@ -84,11 +110,14 @@ export const ClothingList = ({ products, isLoading, category,fetchProductsHandle
           ))}
         </div>
       ) : (
-        <ErrorMessage
-          message={message}
-          errorMessageText={error}
-          onRetry={fetchProductsHandler}
-        />
+        <div className="flex flex-col items-center justify-center h-64 bg-gray-100 rounded-lg">
+          <h2 className="text-xl font-semibold text-gray-500">
+            No products found.
+          </h2>
+          <p className="text-gray-400 mt-2">
+            Try adjusting your filters or check back later!
+          </p>
+        </div>
       )}
 
       {/* Pagination Controls */}
@@ -131,6 +160,5 @@ ClothingList.propTypes = {
   products: PropTypes.array.isRequired,
   isLoading: PropTypes.bool.isRequired,
   category: PropTypes.string,
-  fetchProductsHandler: PropTypes.func.isRequired,
-  message: PropTypes.string.isRequired
+  message: PropTypes.string.isRequired,
 };

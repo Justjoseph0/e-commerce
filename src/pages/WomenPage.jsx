@@ -16,12 +16,9 @@ const WomenPage = () => {
     await fetchProducts(1, { category: "women" });
   };
 
-
-
   return (
-    <section className="max-w-7xl mx-auto flex flex-col gap-y-10">
+    <section className="flex flex-col gap-y-10">
       <HeroSection
-        backgroundImage="women.jpg"
         title="Women Wears"
         subtitle="Discover the Women Wears at Batitude Originals."
       />
@@ -29,7 +26,6 @@ const WomenPage = () => {
         products={products}
         isLoading={isLoading}
         category="women"
-        fetchProductsHandler={fetchProductsHandler}
         message="Women Page."
       />
     </section>

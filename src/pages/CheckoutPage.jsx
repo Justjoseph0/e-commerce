@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/select";
 import { useAuth } from "@/hooks/useAuth";
 import toast from "react-hot-toast";
+import Button from "@/components/Button";
 
 const NIGERIAN_STATES = [
   "Abia", "Adamawa", "Akwa Ibom", "Anambra", "Bauchi", 
@@ -54,6 +55,7 @@ const CheckoutPage = () => {
 
   useEffect(() => {
     getDefaultAddress();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const validateForm = () => {
@@ -153,7 +155,7 @@ const CheckoutPage = () => {
 
  
   return (
-    <div className="mx-auto max-w-7xl">
+    <div className="mx-auto max-w-7xl py-8">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="bg-white shadow rounded-lg p-6 h-fit">
           <div className="flex items-center mb-6">
@@ -310,7 +312,7 @@ const CheckoutPage = () => {
             </div>
           </div>
 
-          <button
+          <Button
             onClick={handleSubmit}
             disabled={isLoading}
             className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition flex items-center justify-center disabled:bg-blue-400"
@@ -322,7 +324,7 @@ const CheckoutPage = () => {
                 <CheckCircle className="mr-2" /> Complete Purchase
               </>
             )}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

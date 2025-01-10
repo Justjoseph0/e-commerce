@@ -212,7 +212,7 @@ const ProductDetails = () => {
           </div>
 
           {/* Product Details */}
-          <div className="bg-white rounded-xl shadow-md p-6 relative">
+          <div className="bg-white rounded-xl shadow-md p-6 relative h-fit">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-2xl md:text-3xl font-bold text-gray-800 capitalize">
                 {name}
@@ -251,7 +251,7 @@ const ProductDetails = () => {
 
             <div className="flex flex-col sm:flex-row justify-between items-center mb-4">
               <div className="flex items-center gap-2 mb-2 sm:mb-0">
-                <span className="text-2xl md:text-3xl font-bold text-amber-600">
+                <span className="text-2xl md:text-3xl font-bold text-custom-brown">
                   ₦{discounted_price}
                 </span>
                 <span className="text-gray-500 line-through">₦{price}</span>
@@ -286,7 +286,7 @@ const ProductDetails = () => {
               <Button
                 className={`w-full py-3 rounded-lg text-white font-semibold transition-colors duration-300 ${
                   inStock
-                    ? "bg-amber-600 hover:bg-amber-700"
+                    ? "bg-slate-600 hover:bg-slate-700"
                     : "bg-gray-400 cursor-not-allowed"
                 }`}
                 disabled={!inStock}

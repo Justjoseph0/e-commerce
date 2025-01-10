@@ -14,16 +14,14 @@ const NewArrival = () => {
     await fetchProducts(1, { sort: "-created_at" });
   };
   return (
-    <section className="max-w-7xl mx-auto flex flex-col gap-y-10">
+    <section className="flex flex-col gap-y-10">
       <HeroSection
-        backgroundImage="newarrival.jpg"
         title="New Arrival"
         subtitle="Discover the New Arrivals Batitude Originals at Batitude Originals"
       />
       <ClothingList
         products={products}
         isLoading={isLoading}
-        fetchProductsHandler={fetchProductsHandler}
         message="New Arrival."
       />
     </section>

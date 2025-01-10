@@ -22,11 +22,7 @@ const LatestCollection = () => {
 
   if (error) {
     return (
-      <ErrorMessage
-        message="latest collection."
-        errorMessageText={error}
-        onRetry={fetchProductsHandler}
-      />
+      <ErrorMessage message="latest collection." errorMessageText={error} />
     );
   }
 
@@ -49,11 +45,7 @@ const LatestCollection = () => {
           ))}
         </div>
       ) : (
-        <ErrorMessage
-          message="latest collection."
-          errorMessageText={error}
-          onRetry={fetchProductsHandler}
-        />
+        <ErrorMessage message="latest collection." errorMessageText={error} />
       )}
     </section>
   );

@@ -98,11 +98,7 @@ const Navbar = () => {
               className="lg:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors"
               onClick={() => setIsMobileMenuOpen((prev) => !prev)}
             >
-              {isMobileMenuOpen ? (
-                <X className="w-6 h-6 text-gray-700" />
-              ) : (
-                <Menu className="w-6 h-6 text-gray-700" />
-              )}
+              <Menu className="w-6 h-6 text-gray-700" />
             </Button>
 
             {/* Logo */}
@@ -113,12 +109,12 @@ const Navbar = () => {
             {/* Actions */}
             <div className="flex items-center space-x-4">
               {/* Search Button */}
-              <button
+              <Button
                 className="p-2 hover:bg-gray-100 rounded-full transition-colors"
                 onClick={openSearchModal}
               >
                 <Search className="w-5 h-5 text-gray-700" />
-              </button>
+              </Button>
 
               {/* Cart */}
               <Link
@@ -220,6 +216,13 @@ const Navbar = () => {
         {/* Mobile Navigation */}
         {isMobileMenuOpen && (
           <div className="lg:hidden fixed inset-0 bg-white z-50 pt-16">
+            <Button
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="absolute top-4 right-4 w-10 h-10 transition-all"
+              aria-label="Close Menu"
+            >
+              <X className="w-6 h-6 text-gray-700" />
+            </Button>
             <div className="p-4">
               <ul className="space-y-4">
                 {["Home", "Women", "Men", "New Arrival", "Collections"].map(
@@ -269,12 +272,12 @@ const Navbar = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="flex-1 p-3 bg-gray-50 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all"
               />
-              <button
+              <Button
                 onClick={closeSearchModal}
                 className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
               >
                 <X className="w-6 h-6 text-gray-700" />
-              </button>
+              </Button>
             </div>
 
             {/* Search Results */}
@@ -325,7 +328,7 @@ const Navbar = () => {
       </div>
 
       {/* Additional spacing to prevent content from hiding under fixed navbar */}
-      <div className="h-28 lg:h-[7rem]" />
+      <div className="h-24 lg:h-[7rem]" />
     </>
   );
 };

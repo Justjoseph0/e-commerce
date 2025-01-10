@@ -109,7 +109,11 @@ const AddAddressForm = () => {
         is_default: formData.isDefault,
     };
     // Handle form submission
-   await addAddress(data);
+   const res = await addAddress(data);
+
+   console.log(res);
+   
+
       navigate("/profile/address");
       setFormData({
         firstName: "",

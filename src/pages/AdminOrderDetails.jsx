@@ -1,3 +1,4 @@
+import Loading from "@/components/Loading";
 import { useCart } from "@/hooks/useCart";
 import { ChevronLeft, Package, CheckCircle, Clock, XCircle, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -7,14 +8,25 @@ const AdminOrderDetails = () => {
   const { reference } = useParams();
   const { adminOrderDetail } = useCart();
   const [currentOrder, setCurrentOrder] = useState([]);
+  const [currentAdd, setCurrentAdd] = useState({})
+  const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate();
 
   async function getOderDetail() {
-    const data = await adminOrderDetail(reference);
-    setCurrentOrder(data);
+    setIsLoading(true)
+    try{
+      const data = await adminOrderDetail(reference);
+      setCurrentOrder(data);
+      setCurrentAdd(data.address)
+    }catch(error){
+      console.error(error);
+    }finally{
+      setIsLoading(false)
+    }
   }
-
-  console.log(currentOrder);
+    // console.log(currentOrder);
+    
+  console.log(currentAdd);
 
   useEffect(() => {
     getOderDetail();
@@ -50,6 +62,8 @@ const AdminOrderDetails = () => {
   function handleBack() {
     navigate("/admin/orders");
   }
+
+  if(isLoading) return <Loading />
 
   return (
     <div className="bg-white shadow-md rounded-lg">
@@ -97,11 +111,14 @@ const AdminOrderDetails = () => {
           <div>
             <p className="font-medium">{currentOrder.username}</p>
             <p className="text-gray-600">{currentOrder.email}</p>
-            <p className="text-gray-600">{"phone number"}</p>
+            <p className="text-gray-600">{currentAdd?.phone_number || ""}</p>
           </div>
           <div>
             <p className="text-gray-600">Shipping Address</p>
-            <p className="font-medium">{"address"}</p>
+            <p className="font-medium">{currentAdd?.street_address},</p>
+            <p className="font-medium">{currentAdd?.city}, {currentAdd?.state} state,</p>
+            <p className="font-medium"></p>
+            <p className="font-medium">{currentAdd?.country}</p>
           </div>
         </div>
 

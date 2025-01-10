@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { PlusCircle, Home, Building2, Trash2, PenSquare } from "lucide-react";
+import { PlusCircle, Home, Building2, Trash2, PenSquare, MapPin } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
@@ -11,6 +11,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useNavigate } from "react-router-dom";
+import Loading from "@/components/Loading";
 
 const AddressBook = () => {
   const { getUserAddress, deleteAddress } = useAuth();
@@ -18,11 +19,22 @@ const AddressBook = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedAddressId, setSelectedAddressId] = useState(null);
   const [addresses, setAddresses] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   async function fetchAddresses() {
-    const data = await getUserAddress();
-    setAddresses(data);
+    setLoading(true);
+    try {
+      const data = await getUserAddress();
+      setAddresses(data);
+    } catch (error) {
+      console.error("Error fetching addresses:", error);
+    } finally {
+      setLoading(false);
+    }
   }
+
+  console.log(addresses);
+  
 
   async function handleDelete(id) {
     await deleteAddress(id);
@@ -44,6 +56,29 @@ const AddressBook = () => {
     setSelectedAddressId(addressId);
     setDeleteDialogOpen(true);
   };
+  
+  if (loading) {
+    return <Loading />;
+  }
+
+  if (addresses.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] text-center">
+        <MapPin className="w-16 h-16 text-gray-300 mb-4" />
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">No addresses found</h2>
+        <p className="text-gray-500 mb-6 max-w-md">
+          Add your first address to make checkout easier and faster
+        </p>
+        <Button 
+          onClick={handleNavigate}
+          className="flex items-center gap-2"
+        >
+          <PlusCircle className="w-4 h-4" />
+          Add New Address
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div>

@@ -13,11 +13,13 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate, useParams } from "react-router-dom";
+import Loading from "@/components/Loading";
 
 const EditAddress = () => {
   const {  getUserAddress, updateAddress } = useAuth();
   const navigate = useNavigate();
   const { addressId } = useParams(); 
+  const [loading, setLoading] = useState(true);
 
   const NIGERIAN_STATES = [
     "Abia", "Adamawa", "Akwa Ibom", "Anambra", "Bauchi", "Bayelsa", "Benue", "Borno", 
@@ -42,6 +44,7 @@ const EditAddress = () => {
   useEffect(() => {
 
     const fetchAddress = async () => {
+      setLoading(true);
       try {
         const data = await getUserAddress(addressId);
 
@@ -62,6 +65,8 @@ const EditAddress = () => {
         }
       } catch (error) {
         console.error("Failed to fetch address:", error);
+      }finally{
+        setLoading(false);
       }
     };
 
@@ -102,7 +107,9 @@ const EditAddress = () => {
       isDefault: checked,
     }));
   };
-
+if (loading) {
+    return <Loading />;
+  }
   return (
     <div className="bg-gray-50 flex items-center justify-center">
       <Card className="w-full">

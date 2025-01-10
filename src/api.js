@@ -1,14 +1,18 @@
 import axios from "axios";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "./constants/constants";
 
-export const apiUrl = "http://127.0.0.1:8000/";
+
+
+
+
+
+export const apiUrl = import.meta.env.VITE_API_URL;
+
 
 
 const api = axios.create({
   baseURL: apiUrl,
 });
-
-
 
 const refreshAccessToken = async () => {
   try {
@@ -22,8 +26,7 @@ const refreshAccessToken = async () => {
       refresh: refreshToken,
     });
 
-    console.log('refreshing');
-    
+    console.log("refreshing");
 
     const { access } = response.data;
 
@@ -31,7 +34,7 @@ const refreshAccessToken = async () => {
       throw new Error("Failed to refresh access token");
     }
 
-    console.log('setting new access');
+    console.log("setting new access");
     // Update the access token in localStorage
     localStorage.setItem(ACCESS_TOKEN, access);
     return access;
@@ -41,16 +44,18 @@ const refreshAccessToken = async () => {
     // Remove invalid tokens and redirect to login
     localStorage.removeItem(ACCESS_TOKEN);
     localStorage.removeItem(REFRESH_TOKEN);
-    window.location.href = "/login";
+    // window.location.href = "/login";
     throw error;
   }
 };
 
-
-
-
 api.interceptors.request.use(
   (config) => {
+    // Don't add token for login and register endpoints
+    if (config.url.includes('/login/') || config.url.includes('/register/')) {
+      return config;
+    }
+
     const token = localStorage.getItem(ACCESS_TOKEN);
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -60,31 +65,45 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-
+// Response interceptor
 api.interceptors.response.use(
-  (response) => response, // Pass through successful responses
+  (response) => response,
   async (error) => {
     const originalRequest = error.config;
 
+    // Don't retry for login/register endpoints
+    if (originalRequest.url.includes('/login/') || originalRequest.url.includes('/register/')) {
+      return Promise.reject({
+        response: error.response || "Authentication failed",
+        originalError: error,
+      });
+    }
+
+    // Only try to refresh token for 401 errors on authenticated endpoints
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
       try {
         const newAccessToken = await refreshAccessToken();
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-        return api(originalRequest); // Retry the original request
+        return api(originalRequest);
       } catch (refreshError) {
-        console.error("Failed to refresh token during request retry:", refreshError);
-        return Promise.reject(refreshError);
+        // Only redirect on refresh token failures for non-login pages
+        if (typeof window !== 'undefined' && !window.location.pathname.includes('login')) {
+          window.location.href = "/login";
+        }
+        return Promise.reject({
+          message: "Session expired. Please log in again.",
+          originalError: refreshError,
+        });
       }
     }
 
-    return Promise.reject(error); // For other errors
+    return Promise.reject({
+      message: error.response?.data?.detail || "An error occurred",
+      originalError: error,
+    });
   }
 );
 
-
-
-export default api
-
-
+export default api;

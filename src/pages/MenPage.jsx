@@ -7,11 +7,13 @@ const MenPage = () => {
   const { products, isLoading, fetchProducts } = useProducts();
 
   useEffect(() => {
-    fetchProducts(1, { category: "men" });
+    fetchProductsHandler();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  console.log(products);
+  const fetchProductsHandler = async () => {
+    await fetchProducts(1, { category: "men" });
+  };
 
   return (
     <section className="max-w-7xl mx-auto flex flex-col gap-y-10">
@@ -20,7 +22,13 @@ const MenPage = () => {
         title="Men Wears"
         subtitle="Discover Men Wears at Batitude Originals."
       />
-      <ClothingList products={products} isLoading={isLoading} category="men" />
+      <ClothingList
+        products={products}
+        isLoading={isLoading}
+        category="men"
+        message="Men Page."
+        fetchProductsHandler={fetchProductsHandler}
+      />
     </section>
   );
 };

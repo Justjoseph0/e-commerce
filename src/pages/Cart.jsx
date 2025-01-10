@@ -5,19 +5,18 @@ import { useCart } from "@/hooks/useCart";
 
 const Cart = () => {
   const { cart, updateCart, isLoading } = useCart();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const subTotal = cart.reduce((acc, item) => acc + item.get_total_price, 0);
 
   console.log(cart);
-  
 
-  const handleIncrement = (productId, currentQuantity,size) => {
-    updateCart(productId, currentQuantity + 1,size);
+  const handleIncrement = (productId, currentQuantity, size) => {
+    updateCart(productId, currentQuantity + 1, size);
   };
 
-  const handleDecrement = (productId, currentQuantity,size) => {
-    updateCart(productId, currentQuantity - 1,size);
+  const handleDecrement = (productId, currentQuantity, size) => {
+    updateCart(productId, currentQuantity - 1, size);
   };
 
   // if (isLoading) return <Loading />;
@@ -84,7 +83,7 @@ const Cart = () => {
                   <span>₦{subTotal.toFixed(2)}</span>
                 </div>
                 <button
-                onClick={() => navigate('/checkout')}
+                  onClick={() => navigate("/checkout")}
                   className="w-full bg-amber-600 text-white py-3 rounded-lg 
                              hover:bg-amber-700 transition-colors duration-300 
                              transform hover:-translate-y-1 shadow-md mt-4"

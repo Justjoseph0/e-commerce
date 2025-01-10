@@ -5,13 +5,13 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/hooks/useCart";
 import { useProducts } from "@/hooks/useProducts";
+import Button from "./Button";
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -46,7 +46,6 @@ const Navbar = () => {
       }
     };
 
-    // Debounce search to reduce unnecessary API calls
     if (searchQuery.trim()) {
       timeoutId = setTimeout(performSearch, 300);
     }
@@ -56,14 +55,12 @@ const Navbar = () => {
     };
   }, [searchQuery, search]);
 
-  // Focus search input when modal opens
   useEffect(() => {
     if (isSearchModalOpen && searchInputRef.current) {
       searchInputRef.current.focus();
     }
   }, [isSearchModalOpen]);
 
-  // Handle search result click
   const handleSearchResultClick = (slug) => {
     setSearchQuery("");
     setSearchResults([]);
@@ -71,14 +68,12 @@ const Navbar = () => {
     navigate(`/product/detail/${slug}`);
   };
 
-  // Open full search modal
   const openSearchModal = () => {
     setIsSearchModalOpen(true);
     setSearchQuery("");
     setSearchResults([]);
   };
 
-  // Close search modal
   const closeSearchModal = () => {
     setIsSearchModalOpen(false);
     setSearchQuery("");
@@ -94,330 +89,243 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className="py-8 px-4 mb-8 sticky top-0 bg-white z-50 shadow-md">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex justify-between items-center py-4 border-b">
-            {/* Mobile Menu Toggle Button */}
-            <button
-              className="lg:hidden"
+      <nav className="fixed top-0 left-0 right-0 bg-white z-50 transition-all duration-300 border-b border-gray-100">
+        <div className="max-w-7xl mx-auto px-4">
+          {/* Top Bar */}
+          <div className="h-16 flex items-center justify-between">
+            {/* Mobile Menu Button */}
+            <Button
+              className="lg:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors"
               onClick={() => setIsMobileMenuOpen((prev) => !prev)}
             >
-              {isMobileMenuOpen ? <X /> : <Menu />}
-            </button>
+              {isMobileMenuOpen ? (
+                <X className="w-6 h-6 text-gray-700" />
+              ) : (
+                <Menu className="w-6 h-6 text-gray-700" />
+              )}
+            </Button>
 
             {/* Logo */}
-            <div className="lg:text-3xl font-bold">Logo</div>
+            <div className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
+              LOGO
+            </div>
 
-            {/* Cart and Search Icons */}
-            <ul className="flex items-center lg:gap-x-5 gap-x-3 relative">
-              {/* Search Icon */}
+            {/* Actions */}
+            <div className="flex items-center space-x-4">
+              {/* Search Button */}
               <button
-                className="flex justify-center items-center w-8 h-8"
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
                 onClick={openSearchModal}
               >
-                <Search />
+                <Search className="w-5 h-5 text-gray-700" />
               </button>
 
-              {/* Cart Icon */}
-              <Link to="/cart" className="relative block">
-                <ShoppingCart />
+              {/* Cart */}
+              <Link
+                to="/cart"
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors relative"
+              >
+                <ShoppingCart className="w-5 h-5 text-gray-700" />
                 {cartItemCount > 0 && (
-                  <span className="absolute top-[-8px] right-[-4px] bg-red-500 text-white text-xs rounded-full px-1">
+                  <span className="absolute top-0 right-0 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
                     {cartItemCount}
                   </span>
                 )}
               </Link>
 
-              {/* User Icon */}
+              {/* User Menu */}
               <DropdownMenu>
-                <DropdownMenuTrigger className="flex items-center gap-x-2 text-custom-brown">
-                  <User className="w-5 h-5" />
+                <DropdownMenuTrigger className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+                  <User className="w-5 h-5 text-gray-700" />
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56 bg-white border border-custom-brown/20 rounded-lg shadow-xl">
-                  <div className="px-4 py-2">
-                    {isAuthenticated ? (
-                      <DropdownMenuLabel
+                <DropdownMenuContent className="w-64 mt-2 p-2 bg-white rounded-lg shadow-lg border border-gray-100">
+                  {isAuthenticated ? (
+                    <>
+                      <DropdownMenuItem className="p-2 hover:bg-gray-50 rounded-md">
+                        <Link
+                          to="/profile"
+                          className="flex items-center space-x-2"
+                        >
+                          <span className="text-gray-700">My Account</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem className="p-2 hover:bg-gray-50 rounded-md">
+                        <Link
+                          to="/profile/orders"
+                          className="flex items-center space-x-2"
+                        >
+                          <span className="text-gray-700">Orders</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem className="p-2 hover:bg-gray-50 rounded-md">
+                        <Link
+                          to="/profile/wishlist"
+                          className="flex items-center space-x-2"
+                        >
+                          <span className="text-gray-700">Wishlist</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator className="my-2 border-gray-100" />
+                      <DropdownMenuItem
+                        className="p-2 text-red-600 hover:bg-red-50 rounded-md cursor-pointer"
                         onClick={handleLogout}
-                        className="font-bold bg-red-500 hover:bg-red-600 text-custom-beige py-3 px-4 text-center rounded-lg shadow-lg uppercase tracking-wider transition duration-300 ease-in-out transform hover:scale-95 cursor-pointer"
                       >
                         Logout
-                      </DropdownMenuLabel>
-                    ) : (
-                      <Link to="/login">
-                        <DropdownMenuLabel className="font-bold bg-custom-brown text-custom-beige py-3 px-4 text-center rounded-lg shadow-lg uppercase tracking-wider transition duration-300 ease-in-out transform hover:scale-95">
-                          Login
-                        </DropdownMenuLabel>
+                      </DropdownMenuItem>
+                    </>
+                  ) : (
+                    <DropdownMenuItem className="p-0">
+                      <Link
+                        to="/login"
+                        className="w-full px-4 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-colors text-center"
+                      >
+                        Login
                       </Link>
-                    )}
-                  </div>
-                  <DropdownMenuSeparator className="bg-custom-brown/20" />
-                  <Link to="/profile">
-                    <DropdownMenuItem className="px-4 py-2 hover:bg-custom-brown/10 cursor-pointer transition-colors duration-200 ease-in-out hover:font-semibold">
-                      <span className="text-custom-brown">My Account</span>
                     </DropdownMenuItem>
-                  </Link>
-                  <Link to="/profile/orders">
-                    <DropdownMenuItem className="px-4 py-2 hover:bg-custom-brown/10 cursor-pointer transition-colors duration-200 ease-in-out hover:font-semibold">
-                      <span className="text-custom-brown">Order</span>
-                    </DropdownMenuItem>
-                  </Link>
+                  )}
                 </DropdownMenuContent>
               </DropdownMenu>
-            </ul>
+            </div>
           </div>
 
           {/* Desktop Navigation */}
-          <ul className="hidden lg:flex justify-center gap-x-8 mt-4 text-custom-brown">
-            <li>
-              <NavLink
-                to="/"
-                className={({ isActive }) =>
-                  `p-3 text-base ${
-                    isActive
-                      ? "text-custom-beige bg-custom-brown rounded-lg"
-                      : "text-custom-brown font-medium"
-                  }`
-                }
-              >
-                Home
-              </NavLink>
-            </li>
-            <li>
-              <NavLink
-                to="/women"
-                className={({ isActive }) =>
-                  `p-3 text-base ${
-                    isActive
-                      ? "text-custom-beige bg-custom-brown rounded-lg"
-                      : "text-custom-brown font-medium"
-                  }`
-                }
-              >
-                Women
-              </NavLink>
-            </li>
-            <li>
-              <NavLink
-                to="/men"
-                className={({ isActive }) =>
-                  `p-3 text-base ${
-                    isActive
-                      ? "text-custom-beige bg-custom-brown rounded-lg"
-                      : "text-custom-brown font-medium"
-                  }`
-                }
-              >
-                Men
-              </NavLink>
-            </li>
-            <li>
-              <NavLink
-                to="/new-arrival"
-                className={({ isActive }) =>
-                  `p-3 text-base ${
-                    isActive
-                      ? "text-custom-beige bg-custom-brown rounded-lg"
-                      : "text-custom-brown font-medium"
-                  }`
-                }
-              >
-                New Arrival
-              </NavLink>
-            </li>
-            <li>
-              <NavLink
-                to="/collections"
-                className={({ isActive }) =>
-                  `p-3 text-base ${
-                    isActive
-                      ? "text-custom-beige bg-custom-brown rounded-lg"
-                      : "text-custom-brown font-medium"
-                  }`
-                }
-              >
-                Collections
-              </NavLink>
-            </li>
-          </ul>
+          <div className="hidden lg:block border-t border-gray-100">
+            <ul className="flex justify-center space-x-8 h-12">
+              {["Home", "Women", "Men", "New Arrival", "Collections"].map(
+                (item) => (
+                  <li key={item}>
+                    <NavLink
+                      to={
+                        item === "Home"
+                          ? "/"
+                          : `/${item.toLowerCase().replace(" ", "-")}`
+                      }
+                      className={({ isActive }) =>
+                        `h-full flex items-center px-4 text-sm font-medium transition-colors ${
+                          isActive
+                            ? "text-gray-900 border-b-2 border-gray-900"
+                            : "text-gray-600 hover:text-gray-900"
+                        }`
+                      }
+                    >
+                      {item}
+                    </NavLink>
+                  </li>
+                )
+              )}
+            </ul>
+          </div>
+        </div>
 
-          {/* Mobile Navigation */}
-          {isMobileMenuOpen && (
-            <div className="lg:hidden bg-[#FBF9F3] absolute top-0 left-0 w-full h-screen z-50 py-6 px-4">
-              <div className="flex justify-between items-center">
-                <div className="text-3xl font-bold">Logo</div>
-                <button
-                  className="text-xl"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  <X />
-                </button>
-              </div>
-              <ul className="flex flex-col items-center gap-y-5 mt-5">
-                <li>
-                  <NavLink
-                    to="/"
-                    className={({ isActive }) =>
-                      `text-lg ${
-                        isActive
-                          ? "text-custom-beige bg-custom-brown p-2 rounded-lg"
-                          : "text-custom-brown font-medium"
-                      }`
-                    }
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    Home
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    to="/women"
-                    className={({ isActive }) =>
-                      `text-lg ${
-                        isActive
-                          ? "text-custom-beige bg-custom-brown p-2 rounded-lg"
-                          : "text-custom-brown font-medium"
-                      }`
-                    }
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    Women
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    to="/men"
-                    className={({ isActive }) =>
-                      `text-lg ${
-                        isActive
-                          ? "text-custom-beige bg-custom-brown p-2 rounded-lg"
-                          : "text-custom-brown font-medium"
-                      }`
-                    }
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    Men
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    to="/new-arrival"
-                    className={({ isActive }) =>
-                      `text-lg ${
-                        isActive
-                          ? "text-custom-beige bg-custom-brown p-2 rounded-lg"
-                          : "text-custom-brown font-medium"
-                      }`
-                    }
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    New Arrival
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    to="/collections"
-                    className={({ isActive }) =>
-                      `text-lg ${
-                        isActive
-                          ? "text-custom-beige bg-custom-brown p-2 rounded-lg"
-                          : "text-custom-brown font-medium"
-                      }`
-                    }
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    Collections
-                  </NavLink>
-                </li>
+        {/* Mobile Navigation */}
+        {isMobileMenuOpen && (
+          <div className="lg:hidden fixed inset-0 bg-white z-50 pt-16">
+            <div className="p-4">
+              <ul className="space-y-4">
+                {["Home", "Women", "Men", "New Arrival", "Collections"].map(
+                  (item) => (
+                    <li key={item}>
+                      <NavLink
+                        to={
+                          item === "Home"
+                            ? "/"
+                            : `/${item.toLowerCase().replace(" ", "-")}`
+                        }
+                        className={({ isActive }) =>
+                          `block px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                            isActive
+                              ? "bg-gray-900 text-white"
+                              : "text-gray-600 hover:bg-gray-50"
+                          }`
+                        }
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        {item}
+                      </NavLink>
+                    </li>
+                  )
+                )}
               </ul>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </nav>
 
-      {/* Full Search Modal */}
+      {/* Search Modal */}
       <div
-        className={`fixed top-0 right-0 w-full md:h-[500px] h-full bg-white z-50 shadow-lg transform transition-transform duration-300 ease-in-out ${
-          isSearchModalOpen ? "translate-x-0" : "translate-x-full"
+        className={`fixed inset-0 z-50 transform transition-transform duration-300 ${
+          isSearchModalOpen ? "translate-y-0" : "-translate-y-full"
         }`}
       >
-        <div className="p-6 h-full flex flex-col">
-          {/* Panel Header */}
-          <div className="flex justify-between items-center mb-4 p-4">
-            <h2 className="text-2xl hidden sm:block font-bold text-custom-brown">
-              Logo
-            </h2>
-            <div className="flex-grow mx-4">
+        <div className="bg-white h-full md:h-[500px] shadow-xl">
+          <div className="max-w-7xl mx-auto p-4">
+            {/* Search Header */}
+            <div className="flex items-center space-x-4 mb-6">
               <input
                 ref={searchInputRef}
                 type="text"
                 placeholder="Search products..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full rounded-lg border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-custom-brown"
+                className="flex-1 p-3 bg-gray-50 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all"
               />
+              <button
+                onClick={closeSearchModal}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <X className="w-6 h-6 text-gray-700" />
+              </button>
             </div>
-            <button
-              onClick={closeSearchModal}
-              className="text-gray-600 hover:text-gray-900"
-              aria-label="Close search"
-            >
-              <X className="w-6 h-6" />
-            </button>
-          </div>
 
-          {/* Search Results Grid */}
-          <div className="flex-grow overflow-y-auto">
-            {isLoading ? (
-              <div className="text-center py-4">
-                <span className="text-custom-brown">Searching...</span>
-              </div>
-            ) : searchResults.length > 0 ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                {searchResults.slice(0, 5).map((result, index) => (
-                  <div
-                    key={index}
-                    onClick={() => handleSearchResultClick(result.slug)}
-                    className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer overflow-hidden"
-                  >
-                    <div className="relative pt-[100%]">
-                      <img
-                        src={result.image}
-                        alt={result.name}
-                        className="absolute top-0 left-0 w-full h-full object-cover"
-                      />
-                    </div>
-                    <div className="p-3">
-                      <h3 className="text-sm font-medium text-custom-brown truncate">
-                        {result.name}
-                      </h3>
-                      <p className="text-xs text-gray-500 truncate">
-                        {result.category}
-                      </p>
-                      <p className="text-sm font-semibold text-custom-brown mt-1">
-                        ${result.price}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              searchQuery.trim() !== "" && (
-                <div className="text-center py-4 text-gray-500">
-                  No results found
+            {/* Search Results */}
+            <div className="overflow-y-auto">
+              {isLoading ? (
+                <div className="text-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
                 </div>
-              )
-            )}
+              ) : searchResults.length > 0 ? (
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                  {searchResults.map((result, index) => (
+                    <div
+                      key={index}
+                      onClick={() => handleSearchResultClick(result.slug)}
+                      className="group cursor-pointer"
+                    >
+                      <div className="aspect-square overflow-hidden rounded-lg bg-gray-100">
+                        <img
+                          src={result.image}
+                          alt={result.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                      </div>
+                      <div className="mt-2">
+                        <h3 className="text-sm font-medium text-gray-900 truncate">
+                          {result.name}
+                        </h3>
+                        <p className="text-sm text-gray-500">${result.price}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                searchQuery.trim() !== "" && (
+                  <div className="text-center py-8 text-gray-500">
+                    No results found
+                  </div>
+                )
+              )}
+            </div>
           </div>
         </div>
-      </div>
-
-      {/* Overlay for search panel */}
-      {isSearchModalOpen && (
+        {/* Overlay */}
         <div
-          className="fixed inset-0 bg-black/50 z-40"
+          className="fixed inset-0 bg-black/50 -z-10"
           onClick={closeSearchModal}
         />
-      )}
+      </div>
+
+      {/* Additional spacing to prevent content from hiding under fixed navbar */}
+      <div className="h-28 lg:h-[7rem]" />
     </>
   );
 };

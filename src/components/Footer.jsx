@@ -1,6 +1,7 @@
 import { Instagram, Twitter } from "lucide-react";
 
 const Footer = () => {
+  const currentYear = new Date().getFullYear();
   return (
     <footer className="lg:pt-20 pt-12 pb-14 bg-custom-brown text-custom-beige text-sm mt-10">
       <div className="max-w-7xl mx-auto flex lg:flex-row flex-col space-y-8 lg:space-y-0 px-4 lg:px-0 lg:justify-between">
@@ -50,7 +51,7 @@ const Footer = () => {
 
       <div className="border-t mt-10 border-gray-500">
         <div className="max-w-7xl mx-auto px-4 lg:px-0 pt-10 flex lg:flex-row items-center flex-col space-y-4 justify-between">
-          <p>© 2024 Batitude Powered by Batitude Originals</p>
+          <p>© {currentYear} Batitude Powered by Batitude Originals</p>
           <ul className="flex gap-3 items-center">
             <li>
               <a

@@ -8,9 +8,13 @@ const CollectionsPage = () => {
   const { products, isLoading,fetchProducts } = useProducts();
 
   useEffect(() => {
-    fetchProducts(1, { sort: "created_at" });
+    fetchProductsHandler()
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const fetchProductsHandler = async () => {
+    await fetchProducts(1, { sort: "-created_at" });
+  };
   return (
     <section className="max-w-7xl mx-auto flex flex-col gap-y-10">
       <HeroSection
@@ -18,7 +22,7 @@ const CollectionsPage = () => {
         title="Collections"
         subtitle='Explore our curated collections, thoughtfully designed to bring you the latest trends and timeless classics.'
       />
-      <ClothingList products={products} isLoading={isLoading} />
+      <ClothingList products={products} isLoading={isLoading} fetchProductsHandler={fetchProductsHandler} message="latest collection." />
     </section>
   )
 }

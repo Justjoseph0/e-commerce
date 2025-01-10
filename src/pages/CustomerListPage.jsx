@@ -111,14 +111,14 @@ const CustomerListPage = () => {
                         {customer.email}
                       </div>
                       <div className="text-xs text-gray-500 lg:hidden">
-                        {"customer.phone"}
+                        {customer.phone_number}
                       </div>
                     </td>
                     <td className="p-3 border hidden md:table-cell">
                       {customer.email}
                     </td>
                     <td className="p-3 border hidden lg:table-cell">
-                      {"customer.phone"}
+                      {customer.phone_number}
                     </td>
                     <td className="p-3 border hidden lg:table-cell">
                       {new Date(customer.date_joined).toLocaleDateString()}

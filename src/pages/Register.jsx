@@ -11,6 +11,7 @@ const Register = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (setter) => (e) => {
     setter(e.target.value);
@@ -18,7 +19,7 @@ const Register = () => {
   };
 
   const togglePasswordVisibility = (type) => {
-    if (type === 'password') {
+    if (type === "password") {
       setShowPassword(!showPassword);
     } else {
       setShowConfirmPassword(!showConfirmPassword);
@@ -26,8 +27,15 @@ const Register = () => {
   };
 
   async function handleSubmit(e) {
+    setLoading(true);
     e.preventDefault();
-    await register(username, email, password, confirmPassword);
+    try {
+      await register(username, email, password, confirmPassword);
+    } catch {
+      console.error("Error creating account:", error);
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -41,15 +49,18 @@ const Register = () => {
 
         <div className="p-8">
           {error && (
-            <div className="mb-6 bg-red-50 border-l-4 border-red-500 p-4" role="alert">
+            <div
+              className="mb-6 bg-red-50 border-l-4 border-red-500 p-4"
+              role="alert"
+            >
               <p className="text-sm text-red-700">{error}</p>
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label 
-                htmlFor="username" 
+              <label
+                htmlFor="username"
                 className="text-gray-700 text-sm font-semibold mb-2 flex items-center"
               >
                 <UserPlus className="mr-2 text-custom-brown" size={18} />
@@ -66,8 +77,8 @@ const Register = () => {
             </div>
 
             <div>
-              <label 
-                htmlFor="email" 
+              <label
+                htmlFor="email"
                 className=" text-gray-700 text-sm font-semibold mb-2 flex items-center"
               >
                 <Mail className="mr-2 text-custom-brown" size={18} />
@@ -84,8 +95,8 @@ const Register = () => {
             </div>
 
             <div>
-              <label 
-                htmlFor="password" 
+              <label
+                htmlFor="password"
                 className="text-gray-700 text-sm font-semibold mb-2 flex items-center"
               >
                 <Lock className="mr-2 text-custom-brown" size={18} />
@@ -100,9 +111,9 @@ const Register = () => {
                   placeholder="Create a strong password"
                   required
                 />
-                <button 
+                <button
                   type="button"
-                  onClick={() => togglePasswordVisibility('password')}
+                  onClick={() => togglePasswordVisibility("password")}
                   className="absolute inset-y-0 right-0 pr-3 flex items-center"
                 >
                   {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
@@ -111,8 +122,8 @@ const Register = () => {
             </div>
 
             <div>
-              <label 
-                htmlFor="confirm-password" 
+              <label
+                htmlFor="confirm-password"
                 className="text-gray-700 text-sm font-semibold mb-2 flex items-center"
               >
                 <Lock className="mr-2 text-custom-brown" size={18} />
@@ -127,12 +138,16 @@ const Register = () => {
                   placeholder="Confirm your password"
                   required
                 />
-                <button 
+                <button
                   type="button"
-                  onClick={() => togglePasswordVisibility('confirm')}
+                  onClick={() => togglePasswordVisibility("confirm")}
                   className="absolute inset-y-0 right-0 pr-3 flex items-center"
                 >
-                  {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  {showConfirmPassword ? (
+                    <EyeOff size={20} />
+                  ) : (
+                    <Eye size={20} />
+                  )}
                 </button>
               </div>
             </div>
@@ -141,15 +156,15 @@ const Register = () => {
               type="submit"
               className="w-full bg-custom-brown text-white py-3 rounded-lg hover:bg-custom-brown-dark transition duration-300 mt-4"
             >
-              Create Account
+              {loading ? "Creating Account..." : "Create Account"}
             </button>
           </form>
 
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
-              Already have an account? 
-              <a 
-                href="/login" 
+              Already have an account?
+              <a
+                href="/login"
                 className="text-custom-brown ml-1 hover:underline font-semibold"
               >
                 Log in

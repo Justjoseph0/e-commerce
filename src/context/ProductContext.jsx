@@ -1,7 +1,7 @@
 import { createContext, useState } from "react";
 import api from "@/api";
 import toast from "react-hot-toast";
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const ProductContext = createContext();
@@ -12,34 +12,36 @@ export const ProductProvider = ({ children }) => {
     count: 0,
     next: null,
     previous: null,
-    currentPage: 1
+    currentPage: 1,
   });
   const [currentProduct, setCurrentProduct] = useState({});
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState();
 
   const fetchProducts = async (page = 1, params = {}) => {
     setIsLoading(true);
     try {
-      const response = await api.get("api/products/",{
+      const response = await api.get("api/products/", {
         params: {
           page,
-          ...params
-        }
-  
+          ...params,
+        },
       });
-      const res = response.data
+      const res = response.data;
       // console.log(res);
-      
+
       setProducts({
         data: res.results,
         count: res.count,
         next: res.next,
         previous: res.previous,
-        currentPage: page
+        currentPage: page,
       });
-
     } catch (error) {
       console.error("Error fetching products:", error);
+      if (error.originalError?.message) {
+        setError(error.originalError.message);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -64,6 +66,9 @@ export const ProductProvider = ({ children }) => {
       setCurrentProduct(res.data);
     } catch (error) {
       console.error("error fetching products", error);
+      if (error.originalError?.message) {
+        setError(error.originalError.message);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -71,7 +76,9 @@ export const ProductProvider = ({ children }) => {
   // console.log(products);
   const search = async (query) => {
     try {
-      const res = await api.get("api/product/search", {  params: { search: query } });
+      const res = await api.get("api/product/search", {
+        params: { search: query },
+      });
       return res;
     } catch (error) {
       console.error("Error fetching search results:", error);
@@ -80,27 +87,26 @@ export const ProductProvider = ({ children }) => {
 
   const addProduct = async (data) => {
     try {
-      await api.post("api/products/",data);
-      fetchProducts()
+      await api.post("api/products/", data);
+      fetchProducts();
       toast.success("Product Created successfully!");
       console.log("sssss");
     } catch (error) {
       console.error(error);
-      if(error.response?.data){
+      if (error.response?.data) {
         const errorData = error.response.data;
         if (errorData.image) {
-          toast.error(errorData.image)
+          toast.error(errorData.image);
           return;
         }
-       if(errorData.is_available){
-        toast.error(errorData.is_available)
-       }
+        if (errorData.is_available) {
+          toast.error(errorData.is_available);
+        }
       }
     }
   };
 
-  const updateProduct = async (productSlug,data) => {
-
+  const updateProduct = async (productSlug, data) => {
     if (data instanceof FormData) {
       console.log("FormData being sent to the backend:");
       for (let [key, value] of data.entries()) {
@@ -110,30 +116,29 @@ export const ProductProvider = ({ children }) => {
       console.log("Data being sent to the backend:", data);
     }
     try {
-      await api.patch(`api/product/detail/${productSlug}/`,data);
-      fetchProducts()
+      await api.patch(`api/product/detail/${productSlug}/`, data);
+      fetchProducts();
       toast.success("Product Created successfully!");
       // console.log("sssss");
     } catch (error) {
       console.error(error);
-      if(error.response?.data){
+      if (error.response?.data) {
         const errorData = error.response.data;
         if (errorData.image) {
-          toast.error(errorData.image)
+          toast.error(errorData.image);
           return;
         }
-       if(errorData.is_available){
-        toast.error(errorData.is_available)
-       }
+        if (errorData.is_available) {
+          toast.error(errorData.is_available);
+        }
       }
     }
   };
 
-
-  const deleteProduct = async (productSlug,data) => {
+  const deleteProduct = async (productSlug, data) => {
     try {
-      await api.delete(`api/product/detail/${productSlug}/`,data);
-      fetchProducts()
+      await api.delete(`api/product/detail/${productSlug}/`, data);
+      fetchProducts();
       toast.success("Product Deleted successfully!");
       console.log("sssss");
     } catch (error) {
@@ -141,8 +146,50 @@ export const ProductProvider = ({ children }) => {
     }
   };
 
+  const addWishList = async (productId, sizes = "M") => {
+    console.log("Adding to wishlist:", productId, sizes);
 
-  
+    try {
+      const payload = { product_id: productId };
+      if (sizes) {
+        payload.size = sizes;
+      }
+      console.log("Payload:", payload);
+      await api.post("api/wishlist/", payload);
+    } catch (error) {
+      console.error("Error adding product to wishlist", error.response.data);
+    }
+  };
+
+  const fetchWishList = async () => {
+    try {
+      const res = await api.get("api/wishlist/");
+      return res.data;
+    } catch (error) {
+      console.error("Error fetching wishlist", error);
+    }
+  };
+
+  const deleteWishList = async (productId, size) => {
+    console.log("Deleting from wishlist:", productId, size);
+    try {
+      const payload = {
+        product_id: productId,
+      };
+
+      if (size) {
+        payload.size = size;
+      }
+      await api.delete("api/wishlist/", {
+        data: payload,
+      });
+      toast.success("Product removed from wishlist");
+    } catch (error) {
+      console.error("Error removing product from wishlist", error);
+      toast.error("Error removing product from wishlist");
+    }
+  };
+
 
   return (
     <ProductContext.Provider
@@ -152,7 +199,7 @@ export const ProductProvider = ({ children }) => {
           count: products.count,
           next: products.next,
           previous: products.previous,
-          currentPage: products.currentPage
+          currentPage: products.currentPage,
         },
         isLoading,
         fetchProductDetail,
@@ -162,16 +209,17 @@ export const ProductProvider = ({ children }) => {
         addProduct,
         updateProduct,
         deleteProduct,
-        fetchProducts
+        fetchProducts,
+        addWishList,
+        fetchWishList,
+        deleteWishList,
+        error
       }}
     >
       {children}
     </ProductContext.Provider>
   );
-
-
-
 };
 ProductProvider.propTypes = {
-  children: PropTypes.node.isRequired
+  children: PropTypes.node.isRequired,
 };

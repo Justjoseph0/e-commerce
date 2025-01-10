@@ -26,12 +26,12 @@ export const AuthProvider = ({ children }) => {
         return;
       }
 
-      await api.post("register/", { username, email, password });
-      navigate("/check-mail");
+      await api.post("api/register/", { username, email, password });
+      navigate("/check-mail/activate");
     } catch (err) {
-      console.error(err);
-      if (err.response?.data?.detail) {
-        setError(err.response.data.detail);
+      console.error(err.response.data);
+      if (err.response?.data?.email) {
+        setError(err.response.data.email);
         return;
       }
 
@@ -57,22 +57,53 @@ export const AuthProvider = ({ children }) => {
       const user = jwtDecode(data.access);
 
       setUser(user);
-      navigate(from);
+      navigate(user.is_admin ? "admin" :from);
       // setUser(response.data);
     } catch (error) {
-      console.error(error);
+      console.error(error.message);
 
-      if (error.response) {
-        console.error("Login failed:", error.response.data);
-        setError(
-          error.response.data.detail || "Login failed. Please try again."
-        );
-      } else {
-        console.error("Error:", error.message);
-        alert("An error occurred. Please try again.");
+      if (error) {
+        console.error("Login failed:", error.message);
+        setError(error.message || "Login failed. Please try again.");
       }
     }
   };
+
+  const SendPasswordResetLink = async (email) => {
+    try {
+      await api.post("api/reset-password/", { email });
+      navigate("/check-mail/reset");
+      console.log("Password reset link sent successfully!");
+    } catch (error) {
+      console.error(error);
+      setError(error.message);
+    }
+  };
+
+  const resetPassword = async (uidb64, token, password, confirmPassword) => {
+    try {
+      if (password !== confirmPassword) {
+        setError("Passwords do not match.");
+        return;
+      }
+      await api.post(`api/password-reset-confirm/${uidb64}/${token}/`, {
+        password,
+      });
+      navigate("/password-changed");
+    } catch (error) {
+      const errorMessage = error.originalError.response?.data;
+      console.error(errorMessage);
+      if (errorMessage?.password) {
+        setError(errorMessage?.password[0]);
+        return;
+      }
+      if (errorMessage?.detail) {
+        setError(errorMessage?.detail);
+        return;
+      }
+    }
+  };
+
   const checkAuth = async () => {
     try {
       const token = localStorage.getItem(ACCESS_TOKEN);
@@ -98,26 +129,23 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
-
-
   const userProfile = async () => {
     try {
       const res = await api.get("api/profile");
       return res.data;
     } catch (error) {
       console.error(error);
-      toast.error("Failed to load user profile.");
+      // toast.error("Failed to load user profile.");
     }
-  }
-  
+  };
 
   const addAddress = async (data) => {
     try {
       await api.post("api/address/", data);
-      toast.success("Address added successfully!");
+      return data;
     } catch (error) {
       console.error(error);
-      toast.error("Failed to add address. Please try again.");
+      // toast.error("Failed to add address. Please try again.");
     }
   };
 
@@ -140,15 +168,17 @@ export const AuthProvider = ({ children }) => {
 
   const getUserAddress = async (addressId = null) => {
     try {
-      const res = await api.get(addressId ? `api/address/${addressId}/` : "api/address/");
+      const res = await api.get(
+        addressId ? `api/address/${addressId}/` : "api/address/"
+      );
       return res.data;
     } catch (error) {
       console.error(error);
-      return [];
+      // return [];
     }
   };
 
-  const updateAddress = async (addressId, data) => { 
+  const updateAddress = async (addressId, data) => {
     try {
       await api.patch(`api/address/${addressId}/`, data);
       toast.success("Address updated successfully!");
@@ -156,7 +186,7 @@ export const AuthProvider = ({ children }) => {
       console.error(error);
       return false;
     }
-  }    
+  };
 
   const deleteAddress = async (id) => {
     try {
@@ -188,7 +218,9 @@ export const AuthProvider = ({ children }) => {
         deleteAddress,
         userProfile,
         addAddress,
-        updateAddress
+        updateAddress,
+        SendPasswordResetLink,
+        resetPassword,
       }}
     >
       {children}

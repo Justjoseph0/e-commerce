@@ -8,6 +8,7 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const { login, error, clearError } = useAuth();
 
@@ -22,7 +23,15 @@ const Login = () => {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    await login(email, password);
+    setLoading(true);
+    try {
+      await login(email, password);
+    }catch {
+      console.error("Error logging in:", error);
+    }finally {
+      setLoading(false);
+    }
+  
   }
 
   return (
@@ -94,7 +103,7 @@ const Login = () => {
               type="submit"
               className="w-full bg-custom-brown text-white py-3 rounded-lg hover:bg-custom-brown-dark transition duration-300 mt-4"
             >
-              Login
+              {loading ? "Logging In..." : "Login"}
             </button>
           </form>
 

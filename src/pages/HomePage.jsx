@@ -3,10 +3,10 @@ import LatestCollection from "../components/LatestCollection"
 
 const HomePage = () => {
   return (
-    <div>
-      <Header />
-      <LatestCollection />
-    </div>
+    <div className="min-h-screen bg-gray-50">
+    <Header />
+    <LatestCollection />
+  </div>
   )
 }
 

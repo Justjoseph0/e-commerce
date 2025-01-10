@@ -1,35 +1,59 @@
+
 import { apiUrl } from "@/api";
 import { Link } from "react-router-dom";
-import PropTypes from 'prop-types'; 
+import PropTypes from 'prop-types';
+import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
+import { Heart, ShoppingCart } from "lucide-react";
+
 const ClothCard = ({ cloth }) => {
-  const { 
-    name, 
-    image, 
-    is_available: inStock, 
-    price, 
+  const {
+    name,
+    image,
+    is_available: inStock,
+    price,
     discounted_price,
-    slug 
+    slug
   } = cloth;
 
   const img = `${apiUrl}${image}`;
+  const discount = price && discounted_price 
+    ? Math.round(((price - discounted_price) / price) * 100)
+    : 0;
 
   return (
-    <Link 
+    <Link
       to={`/product/detail/${slug}`}
-      className="group relative block transform transition-all duration-300"
+      className="block transform transition-all duration-300 hover:-translate-y-1"
     >
-      <div className="relative overflow-hidden rounded-sm border border-custom-brown bg-white shadow-sm">
+      <Card className="relative overflow-hidden bg-white">
+        {/* Discount Badge */}
+        {discount > 0 && (
+          <Badge className="absolute left-4 top-4 z-10 bg-red-600 text-white">
+            -{discount}%
+          </Badge>
+        )}
+
+        {/* Quick Action Buttons */}
+        <div className="absolute right-4 top-4 z-10 flex flex-col gap-2 opacity-0 transition-opacity group-hover:opacity-100">
+          <button className="rounded-full bg-white p-2 shadow-lg transition-all hover:bg-gray-100">
+            <Heart className="h-5 w-5 text-gray-600" />
+          </button>
+          <button className="rounded-full bg-white p-2 shadow-lg transition-all hover:bg-gray-100">
+            <ShoppingCart className="h-5 w-5 text-gray-600" />
+          </button>
+        </div>
+
         {/* Image Container */}
-        <div className="relative h-[350px] w-full overflow-hidden">
+        <div className="relative h-64 w-full overflow-hidden">
           <img
             src={img}
             alt={name}
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
-          
           {!inStock && (
-            <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-60">
-              <span className="text-2xl font-bold text-white backdrop-blur-sm">
+            <div className="absolute inset-0 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+              <span className="text-lg font-semibold text-white">
                 Out of Stock
               </span>
             </div>
@@ -37,27 +61,30 @@ const ClothCard = ({ cloth }) => {
         </div>
 
         {/* Product Details */}
-        <div className="px-4 py-4 bg-custom-beige rounded-b-xl border-t-2 border-custom-brown">
-          <div className="flex flex-col space-y-2">
-            <h4 className="text-lg text-custom-brown truncate">
-              {name}
-            </h4>
-            
-            <div className="flex items-center justify-between">
-              <span className="text-2xl font-normal text-black">
-                ₦{discounted_price}
+        <div className="space-y-3 p-4">
+          <h3 className="line-clamp-2 min-h-[3rem] text-lg font-medium text-gray-800">
+            {name}
+          </h3>
+
+          <div className="flex items-baseline justify-between">
+            <div className="flex items-baseline gap-2">
+              <span className="text-xl font-semibold text-gray-900">
+                ₦{discounted_price?.toLocaleString()}
               </span>
-              
-              <span className="text-sm font-normal text-gray-500 line-through">
-                ₦{price}
-              </span>
+              {discount > 0 && (
+                <span className="text-sm text-gray-500 line-through">
+                  ₦{price?.toLocaleString()}
+                </span>
+              )}
             </div>
+            {inStock && (
+              <Badge className="bg-green-100 text-green-800">
+                In Stock
+              </Badge>
+            )}
           </div>
         </div>
-
-        {/* Hover Overlay */}
-        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300"></div>
-      </div>
+      </Card>
     </Link>
   );
 };

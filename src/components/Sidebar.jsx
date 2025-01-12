@@ -32,7 +32,7 @@ const Sidebar = () => {
         <SidebarLink
           to="/profile/reviews"
           icon={<Star className="mr-3" />}
-          label="My Reviews"
+          label="Pending Reviews"
         />
         <SidebarLink
           to="/profile/address"

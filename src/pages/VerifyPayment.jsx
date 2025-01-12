@@ -29,7 +29,7 @@ const VerifyPayment = () => {
         console.log(response);
         
 
-        if (response.data.status === "success") {
+        if (response.status === 200) {
           setVerificationStatus("success");
           setPaymentDetails(response.data);
         } else {
@@ -48,6 +48,9 @@ const VerifyPayment = () => {
     };
 
     handleVerifyPayment();
+
+    
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const renderStatusContent = () => {

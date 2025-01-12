@@ -60,7 +60,7 @@ const AdminOrderDetails = () => {
   
 
   function handleBack() {
-    navigate("/admin/orders");
+    navigate(-1);
   }
 
   if(isLoading) return <Loading />

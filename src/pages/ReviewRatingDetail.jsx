@@ -1,131 +1,223 @@
-import { Star, Image, AlertCircle } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { Star, ArrowLeft, Loader2 } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useProducts } from "@/hooks/useProducts";
+import { apiUrl } from "@/api";
+import toast from "react-hot-toast";
 
 const ReviewRatingDetail = () => {
+  const navigate = useNavigate();
+  const { productId } = useParams();
+  const { search } = useLocation();
+  const { fetchPendingReviewDetail, reviewProduct, isLoading } = useProducts();
+
+  // const [isLoading, setIsLoading] = useState(true);
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
-  const [title, setTitle] = useState("");
-  const [review, setReview] = useState("");
-  const [images, setImages] = useState([]);
+  const [formData, setFormData] = useState({
+    title: "",
+    name: "",
+    review: "",
+  });
   const [error, setError] = useState("");
+  const [product, setProduct] = useState({});
 
+  const queryParams = new URLSearchParams(search);
+  const size = queryParams.get('size');
+  const reference = queryParams.get('reference');
 
-  const handleSubmit = (e) => {
+  console.log(reference,size);
+  
+
+  const fetchPendingReview = async () => {
+    try {
+      const res = await fetchPendingReviewDetail(reference,size);
+      // console.log(res);
+      setProduct(res.data);
+    } catch (error) {
+      setError("Failed to load product details");
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setError("");
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+
     if (rating === 0) {
       setError("Please select a rating");
       return;
     }
-    if (title.trim() === "") {
+    if (!formData.title.trim()) {
       setError("Please add a title for your review");
       return;
     }
-    if (review.trim() === "") {
+    if (!formData.name.trim()) {
+      setError("Please enter your name");
+      return;
+    }
+    if (!formData.review.trim()) {
       setError("Please write your review");
       return;
     }
-    // Handle form submission here
-    console.log({ rating, title, review, images });
-    setError("");
+
+    const res = await reviewProduct(productId,reference, rating, formData.review);
+    if (res.status === 201) {
+      toast.success('Product Reviewed Successfully')
+      navigate("/profile/reviews");
+    }
+
+
+
+
+    // Handle submission logic here
+    // console.log({ rating, ...formData });
   };
 
+  const { product_name, product_image } = product;
+
+  useEffect(() => {
+    fetchPendingReview();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="w-8 h-8 animate-spin text-orange-500" />
+      </div>
+    );
+  }
+
   return (
-    <div>
-      <h2 className="text-2xl font-bold text-gray-800 mb-4">Rate & Review</h2>
+    <Card className="shadow-none border-none">
+      <CardHeader className="space-y-4">
+        <Button
+          variant="ghost"
+          className="w-fit p-2"
+          onClick={() => navigate(-1)}
+        >
+          <ArrowLeft className="w-5 h-5" />
+        </Button>
+        <h2 className="text-2xl font-bold text-gray-800">Rate & Review</h2>
+      </CardHeader>
 
-      {/* Product Info */}
-      <div className="flex items-center gap-4 border-b pb-4 mb-6">
-        <img
-          src="https://via.placeholder.com/80"
-          alt="Product"
-          className="w-20 h-20 object-cover rounded-md border"
-        />
-        <div className="flex flex-col gap-y-2">
-          <h3 className="text-lg font-semibold text-gray-800">
-            Gold Plated Stainless Steel Spoon & Fork//12Pcs
-          </h3>
+      <CardContent className="space-y-6">
+        {error && (
+          <Alert variant="destructive">
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
 
-          <div className="flex gap-4">
-            {[1, 2, 3, 4, 5].map((star) => (
-              <button
-                key={star}
-                type="button"
-                className="focus:outline-none"
-                onMouseEnter={() => setHoverRating(star)}
-                onMouseLeave={() => setHoverRating(0)}
-                onClick={() => setRating(star)}
+        <div className="flex items-center gap-4 pb-6 border-b">
+          <img
+            src={`${apiUrl}${product_image}`}
+            alt={product_name}
+            className="w-24 h-24 object-cover rounded-lg border"
+          />
+          <div className="space-y-3">
+            <h3 className="text-lg font-semibold text-gray-800">
+              {product_name}
+            </h3>
+            <div className="flex gap-2">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <button
+                  key={star}
+                  type="button"
+                  className="focus:outline-none transition-colors duration-200"
+                  onMouseEnter={() => setHoverRating(star)}
+                  onMouseLeave={() => setHoverRating(0)}
+                  onClick={() => setRating(star)}
+                >
+                  <Star
+                    className={`w-8 h-8 transition-colors duration-200 ${
+                      star <= (hoverRating || rating)
+                        ? "fill-yellow-400 text-yellow-400"
+                        : "text-gray-300"
+                    }`}
+                  />
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label
+                htmlFor="title"
+                className="text-sm font-medium text-gray-700"
               >
-                <Star
-                  className={`w-8 h-8 ${
-                    star <= (hoverRating || rating)
-                      ? "fill-yellow-400 text-yellow-400"
-                      : "text-gray-300"
-                  }`}
-                />
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
+                Review Title
+              </label>
+              <Input
+                id="title"
+                name="title"
+                value={formData.title}
+                onChange={handleInputChange}
+                placeholder="e.g. Great product!"
+                className="w-full"
+              />
+            </div>
 
-      {/* Review Form */}
-      <div className="space-y-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {/* Review Title */}
-          <div>
+            <div className="space-y-2">
+              <label
+                htmlFor="name"
+                className="text-sm font-medium text-gray-700"
+              >
+                Your Name
+              </label>
+              <Input
+                id="name"
+                name="name"
+                value={formData.name}
+                onChange={handleInputChange}
+                placeholder="Enter your name"
+                className="w-full"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
             <label
-              htmlFor="review-title"
-              className="block text-sm font-medium text-gray-600"
+              htmlFor="review"
+              className="text-sm font-medium text-gray-700"
             >
-              Review Title
+              Detailed Review
             </label>
-            <input
-              id="review-title"
-              type="text"
-              placeholder="e.g. I like it! / I don't like it!"
-              className="mt-1 w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-orange-300"
+            <Textarea
+              id="review"
+              name="review"
+              value={formData.review}
+              onChange={handleInputChange}
+              placeholder="Share your experience with this product..."
+              rows={4}
+              className="w-full"
             />
           </div>
 
-          {/* Your Name */}
-          <div>
-            <label
-              htmlFor="review-name"
-              className="block text-sm font-medium text-gray-600"
-            >
-              Your Name
-            </label>
-            <input
-              id="review-name"
-              type="text"
-              placeholder="Your name"
-              className="mt-1 w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-orange-300"
-            />
-          </div>
-        </div>
-
-        {/* Detailed Review */}
-        <div>
-          <label
-            htmlFor="detailed-review"
-            className="block text-sm font-medium text-gray-600"
+          <Button
+            type="submit"
+            className="w-full bg-orange-500 hover:bg-orange-600 text-white"
           >
-            Detailed Review
-          </label>
-          <textarea
-            id="detailed-review"
-            placeholder="Tell us more about your rating!"
-            className="mt-1 w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-orange-300"
-            rows="4"
-          ></textarea>
-        </div>
-      </div>
-
-      {/* Submit Button */}
-      <button className="w-full mt-6 py-2 bg-orange-500 text-white font-semibold rounded-lg hover:bg-orange-600 transition duration-300">
-        Submit Your Review
-      </button>
-    </div>
+            {isLoading ? "Submitting....." : " Submit Review"}
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
   );
 };
 

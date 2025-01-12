@@ -18,15 +18,14 @@ const Orders = () => {
     results: [],
   });
 
-
-  // console.log(userOrders);
-  
+  console.log(orders);
 
   async function getUserOrders() {
     try {
       const data = await userOrders(currentPage);
-      
-      if (!Array.isArray(data.results)) throw new Error("Invalid response data");
+
+      if (!Array.isArray(data.results))
+        throw new Error("Invalid response data");
 
       const ordersWithTotalPrice = data.results?.map((order) => ({
         ...order,
@@ -51,8 +50,12 @@ const Orders = () => {
 
   useEffect(() => {
     getUserOrders();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage]);
+
+  function handleNavigate(reference) {
+    navigate(`/profile/order/${reference}`);
+  }
 
   if (isLoading) return <Loading />;
   if (error) return <div className="text-red-500 text-center">{error}</div>;
@@ -67,8 +70,8 @@ const Orders = () => {
         <p className="text-gray-500 mb-6 max-w-md">
           Start shopping to see your orders here
         </p>
-        <Button 
-          onClick={() => navigate('/')}
+        <Button
+          onClick={() => navigate("/")}
           className="flex items-center gap-2"
         >
           Start Shopping
@@ -85,7 +88,8 @@ const Orders = () => {
         {orders.map((order) => (
           <div
             key={order.reference}
-            className="bg-white shadow-md rounded-lg overflow-hidden border border-gray-200"
+            onClick={() => handleNavigate(order.reference)}
+            className="bg-white shadow-md rounded-lg overflow-hidden border border-gray-200 cursor-pointer"
           >
             {/* Parent Order Information */}
             <div className="p-4 bg-gray-50 flex justify-between items-center">
@@ -98,9 +102,35 @@ const Orders = () => {
                   {new Date(order.created_at).toLocaleTimeString()}
                 </p>
                 <p className="text-sm text-gray-500">
-                  Status:{" "}
-                  <span className={`font-medium ${order.status === 'pending' ? 'text-orange-400' : 'text-green-600'}`}>
+                  Payment Status:{" "}
+                  <span
+                    className={`font-medium ${
+                      order.status === "pending"
+                        ? "text-orange-400"
+                        : "text-green-600"
+                    }`}
+                  >
                     {order.status}
+                  </span>
+                </p>
+                <p className="text-sm text-gray-500 mt-1">
+                  Delivery Status:{" "}
+                  <span
+                    className={`font-medium ${
+                      order.delivery_status === "Pending"
+                        ? "text-yellow-600"
+                        : order.delivery_status === "Processing"
+                        ? "text-blue-600"
+                        : order.delivery_status === "Shipped"
+                        ? "text-purple-600"
+                        : order.delivery_status === "Delivered"
+                        ? "text-green-600"
+                        : order.delivery_status === "Cancelled"
+                        ? "text-red-600"
+                        : "text-gray-600"
+                    }`}
+                  >
+                    {order.delivery_status}
                   </span>
                 </p>
               </div>

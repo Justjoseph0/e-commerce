@@ -140,7 +140,7 @@ const Navbar = () => {
                       <DropdownMenuItem className="p-2 hover:bg-gray-50 rounded-md">
                         <Link
                           to="/profile"
-                          className="flex items-center space-x-2"
+                          className="flex items-center space-x-2 w-full"
                         >
                           <span className="text-gray-700">My Account</span>
                         </Link>
@@ -148,7 +148,7 @@ const Navbar = () => {
                       <DropdownMenuItem className="p-2 hover:bg-gray-50 rounded-md">
                         <Link
                           to="/profile/orders"
-                          className="flex items-center space-x-2"
+                          className="flex items-center space-x-2 w-full"
                         >
                           <span className="text-gray-700">Orders</span>
                         </Link>
@@ -156,7 +156,7 @@ const Navbar = () => {
                       <DropdownMenuItem className="p-2 hover:bg-gray-50 rounded-md">
                         <Link
                           to="/profile/wishlist"
-                          className="flex items-center space-x-2"
+                          className="flex items-center space-x-2 w-full"
                         >
                           <span className="text-gray-700">Wishlist</span>
                         </Link>

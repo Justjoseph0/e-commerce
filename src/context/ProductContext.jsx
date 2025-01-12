@@ -190,6 +190,58 @@ export const ProductProvider = ({ children }) => {
     }
   };
 
+  const reviewProduct = async (product_id,reference, rating, review) => {
+    setIsLoading(true);
+    const data = {
+      rating,
+      review,
+      reference
+    };
+    try {
+      const res = await api.post(`api/product/${product_id}/reviews/`, data);
+      return res;
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const fetchReviews = async (product_id) => {
+    console.log(product_id);
+
+    try {
+      const data = await api.get(`api/product/${product_id}/reviews/`);
+      return data;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const pendingReview = async () => {
+    try {
+      const response = api.get("api/order/pending_review/");
+      return response;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const fetchPendingReviewDetail = (productId, size) => {
+    setIsLoading(true);
+    try {
+      const response = api.get(`api/order/pending/${productId}/`, {
+        params: {
+          size: size,
+        },
+      });
+      return response;
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <ProductContext.Provider
@@ -213,7 +265,11 @@ export const ProductProvider = ({ children }) => {
         addWishList,
         fetchWishList,
         deleteWishList,
-        error
+        error,
+        reviewProduct,
+        // fetchReviews,
+        pendingReview,
+        fetchPendingReviewDetail,
       }}
     >
       {children}

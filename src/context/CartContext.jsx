@@ -2,11 +2,10 @@ import toast from "react-hot-toast";
 import api from "@/api";
 import { createContext, useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const CartContext = createContext();
-
 
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
@@ -98,8 +97,11 @@ export const CartProvider = ({ children }) => {
   };
 
   const verifyPayment = async (reference) => {
+
+    console.log(reference);
+    
     try {
-      const response = await api.get(`/api/orders/status/${reference}`);
+      const response = await api.get(`/api/verify-payment/${reference}`);
       return response;
     } catch (error) {
       console.error(error);

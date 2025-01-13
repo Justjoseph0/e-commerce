@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { Star, ArrowLeft, Loader2 } from "lucide-react";
+import { Star, ArrowLeft } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -9,36 +9,40 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useProducts } from "@/hooks/useProducts";
 import { apiUrl } from "@/api";
 import toast from "react-hot-toast";
+import { useAuth } from "@/hooks/useAuth";
+import Loading from "@/components/Loading";
 
 const ReviewRatingDetail = () => {
   const navigate = useNavigate();
   const { productId } = useParams();
   const { search } = useLocation();
   const { fetchPendingReviewDetail, reviewProduct, isLoading } = useProducts();
+  const { user } = useAuth();
+  const { username } = user;
 
   // const [isLoading, setIsLoading] = useState(true);
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [formData, setFormData] = useState({
     title: "",
-    name: "",
+    name: username,
     review: "",
   });
   const [error, setError] = useState("");
   const [product, setProduct] = useState({});
 
   const queryParams = new URLSearchParams(search);
-  const size = queryParams.get('size');
-  const reference = queryParams.get('reference');
+  const size = queryParams.get("size");
+  const reference = queryParams.get("reference");
 
-  console.log(reference,size);
-  
+  // console.log(reference, size);
 
   const fetchPendingReview = async () => {
     try {
-      const res = await fetchPendingReviewDetail(reference,size);
+      const res = await fetchPendingReviewDetail(productId, size, reference);
       // console.log(res);
       setProduct(res.data);
+    // eslint-disable-next-line no-unused-vars
     } catch (error) {
       setError("Failed to load product details");
     }
@@ -74,30 +78,31 @@ const ReviewRatingDetail = () => {
       return;
     }
 
-    const res = await reviewProduct(productId,reference, rating, formData.review);
+    const res = await reviewProduct(
+      productId,
+      reference,
+      rating,
+      formData.name,
+      formData.review,
+      formData.title,
+      size
+    );
     if (res.status === 201) {
-      toast.success('Product Reviewed Successfully')
+      toast.success("Product Reviewed Successfully");
       navigate("/profile/reviews");
     }
-
-
-
-
-    // Handle submission logic here
-    // console.log({ rating, ...formData });
   };
 
   const { product_name, product_image } = product;
 
   useEffect(() => {
     fetchPendingReview();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="w-8 h-8 animate-spin text-orange-500" />
-      </div>
+      <Loading />
     );
   }
 

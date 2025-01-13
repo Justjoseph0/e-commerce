@@ -190,13 +190,26 @@ export const ProductProvider = ({ children }) => {
     }
   };
 
-  const reviewProduct = async (product_id,reference, rating, review) => {
+  const reviewProduct = async (
+    product_id,
+    reference,
+    rating,
+    name,
+    review,
+    title,
+    size
+  ) => {
     setIsLoading(true);
+
     const data = {
       rating,
       review,
-      reference
+      reference,
+      size,
+      title,
+      name,
     };
+
     try {
       const res = await api.post(`api/product/${product_id}/reviews/`, data);
       return res;
@@ -218,21 +231,27 @@ export const ProductProvider = ({ children }) => {
     }
   };
 
-  const pendingReview = async () => {
+  const pendingReview = async (page = 1) => {
     try {
-      const response = api.get("api/order/pending_review/");
+      const response = api.get("api/order/pending_review/", {
+        params: {
+          page,
+        },
+      });
+
       return response;
     } catch (error) {
       console.error(error);
     }
   };
 
-  const fetchPendingReviewDetail = (productId, size) => {
+  const fetchPendingReviewDetail = (productId, size, reference) => {
     setIsLoading(true);
     try {
       const response = api.get(`api/order/pending/${productId}/`, {
         params: {
-          size: size,
+          reference,
+          size,
         },
       });
       return response;

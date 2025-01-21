@@ -15,7 +15,6 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/hooks/useCart";
-import { apiUrl } from "@/api";
 
 const CartCard = ({ item, handleIncrement, handleDecrement }) => {
   const { deleteItem } = useCart();
@@ -31,7 +30,7 @@ const CartCard = ({ item, handleIncrement, handleDecrement }) => {
     slug,
   } = item;
 
-  const image = `${apiUrl}${product_image}`;
+  const image = `${product_image}`;
 
   return (
     <Card className="group transition-all duration-200 hover:shadow-md">

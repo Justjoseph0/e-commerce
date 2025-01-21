@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { MapPin, ShoppingCart, CheckCircle } from "lucide-react";
 import { useCart } from "@/hooks/useCart";
-import { apiUrl } from "@/api";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -277,7 +276,7 @@ const CheckoutPage = () => {
               <div key={item.id} className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
                   <img
-                    src={`${apiUrl}${item.product_image}`}
+                    src={`${item.product_image}`}
                     alt={item.name}
                     className="w-16 h-16 object-cover rounded"
                   />

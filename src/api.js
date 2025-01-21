@@ -2,11 +2,9 @@ import axios from "axios";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "./constants/constants";
 
 
-
-
-
-
 export const apiUrl = import.meta.env.VITE_API_URL;
+export const cloudinaryBaseUrl = import.meta.env.VITE_CLOUDINARY_URL;
+
 
 
 

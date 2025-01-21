@@ -1,10 +1,9 @@
 import { Link, useNavigate } from "react-router-dom";
 import CartCard from "@/components/CartCard";
-import Loading from "@/components/Loading";
 import { useCart } from "@/hooks/useCart";
 
 const Cart = () => {
-  const { cart, updateCart, isLoading } = useCart();
+  const { cart, updateCart } = useCart();
   const navigate = useNavigate();
 
   const subTotal = cart.reduce((acc, item) => acc + item.get_total_price, 0);

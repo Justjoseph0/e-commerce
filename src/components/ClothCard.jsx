@@ -1,10 +1,9 @@
-
-import { apiUrl } from "@/api";
 import { Link } from "react-router-dom";
 import PropTypes from 'prop-types';
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Heart, ShoppingCart } from "lucide-react";
+import { cloudinaryBaseUrl } from "@/api";
 
 const ClothCard = ({ cloth }) => {
   const {
@@ -16,7 +15,10 @@ const ClothCard = ({ cloth }) => {
     slug
   } = cloth;
 
-  const img = `${apiUrl}${image}`;
+
+  const img = `${cloudinaryBaseUrl}${image}`;
+
+  
   const discount = price && discounted_price 
     ? Math.round(((price - discounted_price) / price) * 100)
     : 0;

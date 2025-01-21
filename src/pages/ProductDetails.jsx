@@ -1,4 +1,4 @@
-import { apiUrl } from "@/api";
+import { cloudinaryBaseUrl } from "@/api";
 import Button from "@/components/Button";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
@@ -50,7 +50,7 @@ const ProductDetails = () => {
     product_type,
   } = currentProduct;
 
-  const img = `${apiUrl}${image}`;
+  const img = `${cloudinaryBaseUrl}${image}`;
 
 
   useEffect(() => {

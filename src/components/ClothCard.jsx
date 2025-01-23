@@ -16,6 +16,9 @@ const ClothCard = ({ cloth }) => {
   } = cloth;
 
 
+  console.log(cloth);
+  
+
   const img = `${cloudinaryBaseUrl}${image}`;
 
   

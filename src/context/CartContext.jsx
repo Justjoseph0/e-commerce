@@ -74,12 +74,17 @@ export const CartProvider = ({ children }) => {
   };
 
   const deleteItem = async (productId) => {
+    setIsLoading(true)
+    
     try {
       await api.delete(`api/cart/item/${productId}/remove/`);
+      setCart(prevItems => prevItems.filter(item => item.id !== productId));
       toast.success("Item removed successfully!");
       fetchCart();
     } catch (error) {
       toast.error("Error deleting item:", error);
+    }finally {
+      setIsLoading(false);
     }
   };
 

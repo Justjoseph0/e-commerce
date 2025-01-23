@@ -52,10 +52,9 @@ const ProductDetails = () => {
 
   const img = `${cloudinaryBaseUrl}${image}`;
 
-
   useEffect(() => {
     fetchProductDetail(slug);
-    
+
     if (id) {
       getWishlistStatus();
     }
@@ -176,7 +175,6 @@ const ProductDetails = () => {
   };
 
   const handleAddToCart = () => {
-  
     if (product_type === "sized") {
       setShowSizeDialog(true);
     } else {
@@ -203,16 +201,16 @@ const ProductDetails = () => {
       <section className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Product Image */}
-          <div className="bg-white rounded-xl shadow-md p-6 flex items-center justify-center">
+          <div className="bg-white rounded-xl p-6 flex items-center justify-center">
             <img
               src={img}
               alt={name}
-              className="max-w-full h-auto object-contain"
+              className="w-full h-[400px] object-cover"
             />
           </div>
 
           {/* Product Details */}
-          <div className="bg-white rounded-xl shadow-md p-6 relative h-fit">
+          <div className="bg-white rounded-xl  p-6 relative h-fit">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-2xl md:text-3xl font-bold text-gray-800 capitalize">
                 {name}
